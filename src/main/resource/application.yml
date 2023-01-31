@@ -1,0 +1,17 @@
+project:
+  name: generate-interface-document
+  version: 1.0.0
+swagger:
+  enabled: true
+#  pathMapping: http://localhost:8080
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+doc:
+  #xml生成的输出目录
+  xmlPath: xml
+  #word生成的输出目录
+  outputDir: word
+  # 模板文件存放的目录
+  baseDir: template
