@@ -30,13 +30,17 @@ public class InitOperator implements ApplicationListener<ContextRefreshedEvent> 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("---------项目启动完成，执行初始化操作---------");
-//        FileUtil.deleteFolder(docConfig.getXmlFilePath());
-//        log.info("---------清空xml文件夹---------");
-//        FileUtil.deleteFolder(docConfig.getTemplate());
-//        log.info("---------清空template文件夹---------");
-//        FileUtil.deleteFolder(docConfig.getOutputDir());
-//        log.info("---------清空outFile文件夹---------");
-//        FileUtil.deleteFolder(docConfig.getUpZip());
-//        log.info("---------清空unZip文件夹---------");
+//        clearDir();
+    }
+
+    public void clearDir(){
+        FileUtil.deleteFolder(docConfig.getXmlFilePath());
+        log.info("---------清空xml文件夹---------");
+        FileUtil.deleteFolder(docConfig.getTemplate());
+        log.info("---------清空template文件夹---------");
+        FileUtil.deleteFolder(docConfig.getOutputDir());
+        log.info("---------清空outFile文件夹---------");
+        FileUtil.deleteFolder(docConfig.getUpZip());
+        log.info("---------清空unZip文件夹---------");
     }
 }
