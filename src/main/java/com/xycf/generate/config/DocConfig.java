@@ -16,8 +16,8 @@ public class DocConfig {
     /**
      * 模板文件存放的目录
      */
-    @Value(value = "doc.baseDir")
-    private String baseDir;
+    @Value(value = "doc.template")
+    private String template;
 
     /**
      * word生成的输出目录

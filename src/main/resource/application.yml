@@ -29,8 +29,8 @@ doc:
   #xml生成的输出目录
   xmlPath: xml
   #word生成的输出目录
-  outputDir: word
+  outputDir: outFile
   # 模板文件存放的目录
-  baseDir: template
+  template: template
   #解压文件路径
   upZip: unZip
