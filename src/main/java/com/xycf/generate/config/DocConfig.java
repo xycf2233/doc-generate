@@ -30,4 +30,10 @@ public class DocConfig {
      */
     @Value(value = "${doc.xmlPath}")
     private String xmlFilePath;
+
+    /**
+     * 解压文件的保存路径
+     */
+    @Value(value = "${doc.upZip}")
+    private String upZip;
 }

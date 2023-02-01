@@ -6,4 +6,7 @@ package com.xycf.generate.operator;
  * @Date 2023/1/31 17:03
  */
 public interface ClassOperator {
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.xycf.generate.contoller;
 
+import com.xycf.generate.service.base.DecompressionService;
 import com.xycf.generate.service.base.DocService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,10 +21,22 @@ import javax.annotation.Resource;
 public class TestController {
     @Resource
     private DocService docService;
+    @Resource
+    private DecompressionService decompressionService;
 
-    @ApiOperation(value = "测试方法")
+    @ApiOperation(value = "word转换xml")
     @PostMapping("/test")
     public void test(@RequestParam("file") MultipartFile file){
         docService.changeToXml(file);
+    }
+
+
+    @ApiOperation(value = "解压")
+    @PostMapping("/test1")
+    public void test1(){
+        String compressedFilePath = "C:\\Users\\张天成\\Desktop\\新建文件夹\\file\\1.zip";
+        String targetPath="C:\\Users\\张天成\\Desktop\\新建文件夹\\file";
+        String suffix=".zip";
+        decompressionService.decompression(compressedFilePath,targetPath,suffix);
     }
 }

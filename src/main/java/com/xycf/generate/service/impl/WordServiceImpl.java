@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,17 +64,18 @@ public class WordServiceImpl implements WordService {
         return xmlFileName;
     }
 
-    /**
-     * 根据模板生成文档
-     * 1.word->xml
-     * 2.xml->ftl
-     * 3.ftl->word
-     * @param multipartFile
-     * @return
-     */
     @Override
-    public String generateDocument(MultipartFile multipartFile) {
-        changeToXml(multipartFile);
+    public void uploadTemplate(MultipartFile multipartFile) {
+
+    }
+
+    @Override
+    public void generateDocument(String key, HttpServletResponse response) {
+
+    }
+
+    @Override
+    public String generateDocument(String key) {
         return null;
     }
 }
