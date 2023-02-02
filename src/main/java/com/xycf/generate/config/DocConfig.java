@@ -2,6 +2,7 @@ package com.xycf.generate.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,13 +17,13 @@ public class DocConfig {
     /**
      * 模板文件存放的目录
      */
-    @Value(value = "doc.template")
+    @Value(value = "${doc.template}")
     private String template;
 
     /**
      * word生成的输出目录
      */
-    @Value(value = "doc.outputDir")
+    @Value(value = "${doc.outputDir}")
     private String outputDir;
 
     /**
@@ -36,4 +37,10 @@ public class DocConfig {
      */
     @Value(value = "${doc.upZip}")
     private String upZip;
+
+    /**
+     * 压缩文件的保存路径
+     */
+    @Value(value = "${doc.zip}")
+    private String zip;
 }

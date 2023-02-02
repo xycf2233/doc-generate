@@ -44,11 +44,6 @@ public class FileUtil {
     private static String SEVEN_Z = ".7z";
 
     /**
-     * windows系统下 解压工具根路径
-     */
-    private static final String winRarPath = "7z" ;
-
-    /**
      * 使用MD5编码成32位字符串
      *
      * @param inputStr
@@ -128,6 +123,7 @@ public class FileUtil {
         boolean flag = false;
         File file = new File(path);
         if (!file.exists()) {
+            file.mkdir();
             return flag;
         }
         if (!file.isDirectory()) {
@@ -492,37 +488,37 @@ public class FileUtil {
      * 解压缩rar包
      * @param rarFilePath rar文件的全路径
      * @param targetPath  解压后的文件保存的路径
-     * @param targetPath  解压后的文件保存的路径
+     * @param isInSameDir  是否将压缩包内的所有文件解压到同一个文件夹下
      * @return
      */
     public static String unrar(String rarFilePath, String targetPath, boolean isInSameDir) {
-//        try {
-//            // 获取windows中 WinRAR.exe的路径
-//            boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
-//            final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
-//
-//            // 开始调用命令行解压，参数-o+是表示覆盖的意思
-//            String cmd ="";
-//            if(isWin) {
-//                cmd = winRarPath + " X -o+ " + rarFilePath + " " + targetPath;
-//            }else if(isLinux){
-//                //如果linux做了软连接 不需要这里配置路径
-//                String cmdPath = "/usr/local/bin/unrar";
-//                cmd = "rar" + " X -o+ " + rarFilePath + " " + targetPath;
-//            }
-//            Process proc = Runtime.getRuntime().exec(cmd);
-//            if (proc.waitFor() != 0) {
-//                if (proc.exitValue() == 0) {
-//                    log.warn("解压失败");
-//                }
-//            } else {
-//                log.warn("解压成功");
-//            }
-//        }catch (Exception e) {
-//            e.printStackTrace();
-//            log.warn("解压失败");
-//        }
-        return "方法未完善";
+        try {
+            // 获取windows中 WinRAR.exe的路径
+            boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
+            final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+
+            // 开始调用命令行解压，参数-o+是表示覆盖的意思
+            String cmd ="";
+            if(isWin) {
+                cmd = "rar.exe" + " X -o+ " + rarFilePath + " " + targetPath;
+            }else if(isLinux){
+                //如果linux做了软连接 不需要这里配置路径
+                String cmdPath = "/usr/local/bin/unrar";
+                cmd = "rar" + " X -o+ " + rarFilePath + " " + targetPath;
+            }
+            Process proc = Runtime.getRuntime().exec(cmd);
+            if (proc.waitFor() != 0) {
+                if (proc.exitValue() == 0) {
+                    log.warn("解压失败");
+                }
+            } else {
+                log.warn("解压成功");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            log.warn("解压失败");
+        }
+        return null;
     }
 
 //    /*

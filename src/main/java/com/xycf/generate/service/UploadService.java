@@ -13,5 +13,5 @@ public interface UploadService {
      * 上传文件（压缩包 zip）
      * @param multipartFile
      */
-    void uploadFile(MultipartFile multipartFile);
+    String uploadFile(MultipartFile multipartFile);
 }

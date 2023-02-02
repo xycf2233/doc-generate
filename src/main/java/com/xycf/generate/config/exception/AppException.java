@@ -21,4 +21,8 @@ public class AppException extends RuntimeException{
         this.code = exceptionEnum.getErrorCode();
         this.message = exceptionEnum.getUserTip();
     }
+    public AppException(String message){
+        this.code = "50000";
+        this.message = message;
+    }
 }

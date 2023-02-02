@@ -8,6 +8,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
 
 /**
  * @Author ztc
@@ -30,17 +31,19 @@ public class InitOperator implements ApplicationListener<ContextRefreshedEvent> 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("---------项目启动完成，执行初始化操作---------");
-//        clearDir();
+        clearDir();
     }
 
     public void clearDir(){
-        FileUtil.deleteFolder(docConfig.getXmlFilePath());
+        FileUtil.deleteAllFileInFolder(docConfig.getXmlFilePath());
         log.info("---------清空xml文件夹---------");
-        FileUtil.deleteFolder(docConfig.getTemplate());
+        FileUtil.deleteAllFileInFolder(docConfig.getTemplate());
         log.info("---------清空template文件夹---------");
-        FileUtil.deleteFolder(docConfig.getOutputDir());
+        FileUtil.deleteAllFileInFolder(docConfig.getOutputDir());
         log.info("---------清空outFile文件夹---------");
-        FileUtil.deleteFolder(docConfig.getUpZip());
+        FileUtil.deleteAllFileInFolder(docConfig.getUpZip());
+        log.info("---------清空unZip文件夹---------");
+        FileUtil.deleteAllFileInFolder(docConfig.getZip());
         log.info("---------清空unZip文件夹---------");
     }
 }
