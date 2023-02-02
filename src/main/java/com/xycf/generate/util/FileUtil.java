@@ -492,6 +492,7 @@ public class FileUtil {
      * @return
      */
     public static String unrar(String rarFilePath, String targetPath, boolean isInSameDir) {
+        FileUtil.mkDir(targetPath);
         try {
             // 获取windows中 WinRAR.exe的路径
             boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
@@ -729,7 +730,7 @@ public class FileUtil {
         if (!StringUtils.isEmpty(suffix)) {
             suffix = suffix.toLowerCase();
             if (RAR.equals(suffix)) {
-                // TODO: 2023/2/1 待补充
+                // TODO: 2023/2/2 经过测试  rar4可以解压  rar不行
                 msg = FileUtil.unrar(compressedFilePath, targetPath, true);
             }
             if (ZIP.equals(suffix)) {
@@ -995,5 +996,20 @@ public class FileUtil {
 
         }
 
+    }
+
+    /**
+     * 生成文件夹
+     * @param dir 文件夹路径
+     */
+    public static void mkDir(String dir) {
+        File file = new File(dir);
+        if(!file.exists()){
+            try {
+                file.mkdirs();
+            } catch (Exception e) {
+                throw new AppException("路径:[ "+dir+" 不是一个文件夹]");
+            }
+        }
     }
 }

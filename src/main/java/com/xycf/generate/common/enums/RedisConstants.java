@@ -6,4 +6,6 @@ package com.xycf.generate.common.enums;
  * @Date 2023/2/1 13:57
  */
 public class RedisConstants {
+
+    public static final String UPLOAD_ZIP = "zip:";
 }

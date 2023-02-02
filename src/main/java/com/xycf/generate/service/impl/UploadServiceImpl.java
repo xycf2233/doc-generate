@@ -2,10 +2,12 @@ package com.xycf.generate.service.impl;
 
 import cn.hutool.core.lang.ObjectId;
 import com.xycf.generate.common.enums.DecompressionEnum;
+import com.xycf.generate.common.enums.RedisConstants;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.base.DecompressionService;
+import com.xycf.generate.util.FileUtil;
 import com.xycf.generate.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,13 +38,18 @@ public class UploadServiceImpl implements UploadService {
      */
     @Override
     public String uploadFile(MultipartFile multipartFile) {
+        //3.生成唯一标识
+        String res = ObjectId.next();
+
         String originalFilename = multipartFile.getOriginalFilename();
         String suffix = originalFilename.substring(originalFilename.indexOf("."));
         if(!DecompressionEnum.containsSuffix(suffix)){
             throw new AppException("仅支持上传和解压rar、7z、zip压缩文件！");
         }
-
-        String path =docConfig.getZip()+File.separator+originalFilename;
+        //加入唯一标识  使用户之间文件隔离
+        String dir = docConfig.getZip()+File.separator+res;
+        FileUtil.mkDir(dir);
+        String path =dir+File.separator+originalFilename;
         File file = new File(path);
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
@@ -81,11 +88,10 @@ public class UploadServiceImpl implements UploadService {
             }
         }
         //2.解压->删除zip
-        decompressionService.decompression(path, docConfig.getUpZip(), suffix);
-        //3.生成唯一标识
-        String res = ObjectId.next();
+        decompressionService.decompression(path, docConfig.getUpZip()+File.separator+res, suffix);
+
         //4.存入缓存
-        redisUtils.setCacheObject(res,path);
+        redisUtils.setCacheObject(RedisConstants.UPLOAD_ZIP+res,path);
         return res;
     }
 }
