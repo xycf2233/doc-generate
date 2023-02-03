@@ -1,10 +1,12 @@
 package com.xycf.generate.contoller;
 
+import com.xycf.generate.entity.InterfaceBean;
 import com.xycf.generate.service.base.DecompressionService;
 import com.xycf.generate.service.base.DocService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,5 +40,9 @@ public class TestController {
         String targetPath="C:\\Users\\张天成\\Desktop\\新建文件夹\\file";
         String suffix=".zip";
         decompressionService.decompression(compressedFilePath,targetPath,suffix);
+    }
+    @PostMapping("/test2")
+    public void test2(String a,String b ,Integer c){
+
     }
 }

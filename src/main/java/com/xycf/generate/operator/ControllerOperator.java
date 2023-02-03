@@ -1,7 +1,16 @@
 package com.xycf.generate.operator;
 
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.Type;
 import com.xycf.generate.entity.ControllerOperatorBean;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -9,7 +18,7 @@ import java.util.List;
  * @Description 控制层操作类
  * @Date 2023/1/31 17:04
  */
-public interface ControllerOperator {
+public class ControllerOperator {
 
     /**
      * 解析出控制层文件中 每一个接口 以及
@@ -17,7 +26,9 @@ public interface ControllerOperator {
      * @param controllerFilePaths 控制层文件路径集合
      * @return  解析出来的内容
      */
-    ControllerOperatorBean resolveController(List<String> controllerFilePaths);
+    public ControllerOperatorBean resolveController(List<String> controllerFilePaths){
 
+        return null;
+    }
 
 }
