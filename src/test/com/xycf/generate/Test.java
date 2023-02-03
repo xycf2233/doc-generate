@@ -1,5 +1,6 @@
 package com.xycf.generate;
 
+import cn.hutool.core.io.resource.ClassPathResource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -12,8 +13,6 @@ import javax.annotation.Resource;
  */
 @SpringBootTest(classes = GenerateApplication.class)
 public class Test {
-    @Resource(name = "StringRedisTemplate")
-    RedisTemplate redisTemplate;
 
 
     /**
@@ -21,6 +20,6 @@ public class Test {
      */
     @org.junit.jupiter.api.Test
     public void test(){
-        redisTemplate.opsForValue().set("aaa","123");
+
     }
 }

@@ -1,5 +1,7 @@
 package com.xycf.generate.util;
 
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.StrUtil;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -377,7 +379,7 @@ public class FileUtil {
 
             if (isInSameDir) {
                 String ret = moveToRootDir(targetPath);
-                if (!StringUtils.isEmpty(ret)) {
+                if (!CharSequenceUtil.isEmpty(ret)) {
                     msg.append(ret);
                 }
             }
@@ -492,34 +494,70 @@ public class FileUtil {
      * @return
      */
     public static String unrar(String rarFilePath, String targetPath, boolean isInSameDir) {
-        FileUtil.mkDir(targetPath);
+        StringBuffer msg = new StringBuffer();
+        OutputStream os = null;
+        InputStream is = null;
+        ZipFile zipFile = null;
         try {
-            // 获取windows中 WinRAR.exe的路径
-            boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
-            final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
-
-            // 开始调用命令行解压，参数-o+是表示覆盖的意思
-            String cmd ="";
-            if(isWin) {
-                cmd = "rar.exe" + " X -o+ " + rarFilePath + " " + targetPath;
-            }else if(isLinux){
-                //如果linux做了软连接 不需要这里配置路径
-                String cmdPath = "/usr/local/bin/unrar";
-                cmd = "rar" + " X -o+ " + rarFilePath + " " + targetPath;
+            File rarFile = new File(rarFilePath);
+            //先解压到指定路径
+            File directoryFile = new File(targetPath);
+            if (!directoryFile.exists()) {
+                directoryFile.mkdir();
             }
-            Process proc = Runtime.getRuntime().exec(cmd);
-            if (proc.waitFor() != 0) {
-                if (proc.exitValue() == 0) {
-                    log.warn("解压失败");
+            //解压
+            ShellUtil.excuete(rarFilePath,targetPath);
+            // 把解压后所有子目录的文件都移入目标目录
+            if (isInSameDir) {
+                String ret = moveToRootDir(targetPath);
+                if (!StringUtils.isEmpty(ret)) {
+                    msg.setLength(0);
+                    msg.append(ret);
                 }
-            } else {
-                log.warn("解压成功");
             }
-        }catch (Exception e) {
-            e.printStackTrace();
-            log.warn("解压失败");
+            //如果解压的文件在在目标文件夹中，将其删除
+            if (rarFilePath.contains(targetPath)) {
+                rarFile.delete();
+            }
+            //目标目录的全部文件
+            File folder = new File(targetPath);
+            File[] files = folder.listFiles();
+            if (null != files) {
+                //遍历文件夹下的所有文件
+                for (int i = 0; i < files.length; i++) {
+                    File file = files[i];
+                    //如果是文件
+                    if (file.length() > 0) {
+                        String filePath = file.getPath();
+                        if (filePath.lastIndexOf(".") > -1) {
+                            //获取文件的后缀
+                            String suffix = filePath.substring(filePath.lastIndexOf("."), filePath.length()).toLowerCase();
+                            //如果是压缩包，继续解压缩，也就是解压到目标目录下没有rar文件位置
+                            if (filePath.lastIndexOf(".") > -1 && Arrays.asList(SUFFIX_NAMES).contains(suffix)) {
+                                String ret = unCompressedFilesToSameDir(filePath, targetPath, suffix);
+                                if (!CharSequenceUtil.isEmpty(ret)) {
+                                    msg.setLength(0);
+                                    msg.append(ret);
+                                }
+                            }
+                        }
+                    }
+                    //如果是文件夹
+                    if (file.isDirectory()) {
+                        File fileFilder = new File(targetPath + File.separator + file.getName());
+                        if (!fileFilder.exists()) {
+                            fileFilder.mkdir();
+                        }
+                    }
+                }
+            }
+            return msg.toString();
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            closeZipStream(zipFile, is, os);
         }
-        return null;
+        return msg.toString();
     }
 
 //    /*
