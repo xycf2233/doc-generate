@@ -254,7 +254,7 @@ public class ClassOperator {
      * @param javaBeanFilePath 类绝对路径
      * @return
      */
-    public ControllerOperatorBean getMethodsInfo(String key,String javaBeanFilePath){
+    public Map<String,InterfaceBean> getMethodsInfo(String key,String javaBeanFilePath){
 
         Map<String,InterfaceBean> interfaceBeanMap = new HashMap<>();
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
@@ -310,7 +310,7 @@ public class ClassOperator {
 
             interfaceBeanMap.put(classMethodName,interfaceBean);
         }
-        return new ControllerOperatorBean(interfaceBeanMap);
+        return interfaceBeanMap;
     }
 
     private ClassEntry getResponseInfo(String key, MethodDoc classMethod) {

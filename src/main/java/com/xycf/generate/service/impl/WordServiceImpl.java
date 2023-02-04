@@ -11,6 +11,7 @@ import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.entity.ClassEntry;
 import com.xycf.generate.entity.ControllerOperatorBean;
+import com.xycf.generate.entity.InterfaceBean;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.WordService;
@@ -123,20 +124,17 @@ public class WordServiceImpl implements WordService {
         redisUtils.setCacheMap(RedisConstants.ENTITY_DIR+key,entityFileMap);
 
         //解析控制层文件
-        ControllerOperatorBean controllerOperatorBean = new ControllerOperatorBean();
+        Map<String, InterfaceBean> interfaceBeanMap = new HashMap<>();
         controllerFileMap.entrySet().stream().forEach(t->{
             //类名
             String className = t.getKey();
             //路径
             String value = t.getValue();
             //获取类中接口信息
-            ControllerOperatorBean methodsInfo = classOperator.getMethodsInfo(key, value);
-            System.out.println(methodsInfo);
+            interfaceBeanMap.putAll(classOperator.getMethodsInfo(key, value));;
         });
+        // TODO: 2023/2/4 处理xml文件
+        System.out.println(interfaceBeanMap);
         return null;
-    }
-
-    private void parseControllerMap(){
-
     }
 }
