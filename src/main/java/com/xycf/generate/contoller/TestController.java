@@ -1,5 +1,6 @@
 package com.xycf.generate.contoller;
 
+import com.xycf.generate.common.req.GenerateDocumentReq;
 import com.xycf.generate.entity.InterfaceBean;
 import com.xycf.generate.service.base.DecompressionService;
 import com.xycf.generate.service.base.DocService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @Author ztc
@@ -21,20 +24,21 @@ import javax.annotation.Resource;
 @RestController
 @Api(value = "测试")
 public class TestController {
-    @Resource
-    private DocService docService;
+    @Resource(name = "wordServiceImpl")
+    private DocService wordService;
     @Resource
     private DecompressionService decompressionService;
 
     @ApiOperation(value = "word转换xml")
     @PostMapping("/test")
-    public void test(@RequestParam("file") MultipartFile file){
-        docService.changeToXml(file);
+    public String test(@RequestParam("file") MultipartFile file){
+        wordService.changeToXml(file);
+        return null;
     }
 
 
     @ApiOperation(value = "解压")
-    @PostMapping("/test1")
+    @PostMapping(value = "/test1",name = "abc")
     public void test1(){
         String compressedFilePath = "C:\\Users\\张天成\\Desktop\\新建文件夹\\file\\1.zip";
         String targetPath="C:\\Users\\张天成\\Desktop\\新建文件夹\\file";
@@ -44,5 +48,10 @@ public class TestController {
     @PostMapping("/test2")
     public void test2(String a,String b ,Integer c){
 
+    }
+
+    @PostMapping("/generateDocument")
+    public void generateDocument(@Valid @RequestBody GenerateDocumentReq req){
+        String s = wordService.generateDocument(req.getKey(), req.getControllerDirs(), req.getEntityDirs());
     }
 }

@@ -1,5 +1,9 @@
 package com.xycf.generate.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 /**
@@ -8,18 +12,25 @@ import java.util.List;
  * @Description 接口详情 封装 入参  出参
  * @Date 2023/1/31 17:11
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class InterfaceBean {
 
     /**
      * 入参类
      */
-    private List<Class> request;
+    private List<ClassEntry> request;
     /**
      * 出参类
      */
-    private Class response;
+    private ClassEntry response;
     /**
      * 请求方式
      */
     private String method;
+    /**
+     * 请求路径
+     */
+    private String path;
 }

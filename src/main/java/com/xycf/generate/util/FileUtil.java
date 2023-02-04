@@ -769,13 +769,13 @@ public class FileUtil {
             suffix = suffix.toLowerCase();
             if (RAR.equals(suffix)) {
                 // TODO: 2023/2/2 经过测试  rar4可以解压  rar不行
-                msg = FileUtil.unrar(compressedFilePath, targetPath, true);
+                msg = FileUtil.unrar(compressedFilePath, targetPath, false);
             }
             if (ZIP.equals(suffix)) {
-                msg = FileUtil.unzip(compressedFilePath, targetPath, true);
+                msg = FileUtil.unzip(compressedFilePath, targetPath, false);
             }
             if (SEVEN_Z.equals(suffix)) {
-                msg = FileUtil.unSevenZ(compressedFilePath, targetPath, true);
+                msg = FileUtil.unSevenZ(compressedFilePath, targetPath, false);
             }
         }
         log.info("{}解压成功",targetPath);
