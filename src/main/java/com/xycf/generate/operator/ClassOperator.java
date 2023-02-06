@@ -178,20 +178,6 @@ public class ClassOperator {
         return initClassDoc.getClassDoc();
     }
 
-    public static void main(String[] args) {
-        String javaBeanFilePath = "E:\\Project\\doc-generate\\src\\main\\java\\com\\xycf\\generate\\contoller\\TestController.java";
-//        ClassOperator classOperator = new ClassOperator();
-//        ClassEntry classEntry = classOperator.getClassEntry("D:\\project\\generate-interface-document\\src\\main\\java\\com\\xycf\\generate\\entity\\ControllerOperatorBean.java");
-//        System.out.println("类注释："+classEntry.getModelCommentText());
-//        System.out.println("类名："+classEntry.getModelClassName());
-//        List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
-//        for (FieldEntry fieldEntry : fieldEntryList) {
-//            System.out.println("属性名:"+fieldEntry.getFieldName()+",属性类型:"+fieldEntry.getFieldType()+",属性注释:"+fieldEntry.getFieldExplain());
-//        }
-        ClassOperator classOperator = new ClassOperator();
-        classOperator.getMethodsInfo("asdasf",javaBeanFilePath);
-    }
-
     /**
      * 获取类中方法集合
      * @param javaBeanFilePath 类绝对路径

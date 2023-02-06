@@ -20,6 +20,12 @@ public interface DocService {
     String changeToXml(MultipartFile multipartFile);
 
     /**
+     * 解析xml
+     * @param filePath
+     */
+    void parseXml(String filePath);
+
+    /**
      * 上传模板文件
      * @param multipartFile word/excel
      */
