@@ -2,22 +2,25 @@ package com.xycf.generate.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.spire.doc.Document;
-import com.spire.doc.FileFormat;
-import com.sun.javadoc.MethodDoc;
-import com.xycf.generate.common.dto.ScanUnZipDirDTO;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.spire.doc.*;
+import com.spire.doc.collections.CellCollection;
+import com.spire.doc.collections.SectionCollection;
+import com.spire.doc.collections.TableCollection;
+import com.spire.doc.documents.Paragraph;
 import com.xycf.generate.common.enums.RedisConstants;
+import com.xycf.generate.common.enums.base.DocModelEnum;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.entity.ClassEntry;
-import com.xycf.generate.entity.ControllerOperatorBean;
+import com.xycf.generate.entity.FieldEntry;
 import com.xycf.generate.entity.InterfaceBean;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.WordService;
 import com.xycf.generate.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,9 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author ztc
@@ -85,6 +86,234 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
+    public void parseXml(String filePath) {
+//        try {
+//            // 创建SAXReader对象
+//            SAXReader reader = new SAXReader();
+//            // 加载xml文件
+//            org.dom4j.Document dc= reader.read(new File(filePath));
+//             //获取根节点
+//            Element eroot = dc.getRootElement();
+//            Element sections = eroot.element("sections");
+//            Element section = sections.element("section");
+//            Element body = section.element("body");
+//            Element paragraphs = body.element("paragraphs");
+//            Iterator iterator = paragraphs.elementIterator();
+//            while(iterator.hasNext()){
+//                Element el1 = (Element) iterator.next();
+//                List<Element> el1Elements = el1.elements();
+//                if(CollUtil.isNotEmpty(el1Elements)){
+//
+//                }
+//            }
+//            System.out.println();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        JSONObject jsonObject = JSON.parseObject("{\n" +
+                "    \"generateDocument\": {\n" +
+                "        \"method\": \"post\",\n" +
+                "        \"path\": \"\\\"/generateDocument\\\"\",\n" +
+                "        \"request\": [\n" +
+                "            {\n" +
+                "                \"fieldEntryList\": [\n" +
+                "                    {\n" +
+                "                        \"fieldExplain\": \"唯一标识\",\n" +
+                "                        \"fieldName\": \"key\",\n" +
+                "                        \"fieldType\": \"String\"\n" +
+                "                    },\n" +
+                "                    {\n" +
+                "                        \"fieldExplain\": \"控制层文件路径\",\n" +
+                "                        \"fieldName\": \"controllerDirs\",\n" +
+                "                        \"fieldType\": \"List\"\n" +
+                "                    },\n" +
+                "                    {\n" +
+                "                        \"fieldExplain\": \"实体层文件路径\",\n" +
+                "                        \"fieldName\": \"entityDirs\",\n" +
+                "                        \"fieldType\": \"List\"\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"modelClassName\": \"GenerateDocumentReq\",\n" +
+                "                \"modelCommentText\": \"\"\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"response\": {\n" +
+                "            \"modelClassName\": \"void\"\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"test2\": {\n" +
+                "        \"method\": \"post\",\n" +
+                "        \"path\": \"\\\"/test2\\\"\",\n" +
+                "        \"request\": [\n" +
+                "            {\n" +
+                "                \"fieldEntryList\": [\n" +
+                "                    {\n" +
+                "                        \"fieldName\": \"a\",\n" +
+                "                        \"fieldType\": \"String\"\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"modelClassName\": \"String\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "                \"fieldEntryList\": [\n" +
+                "                    {\n" +
+                "                        \"fieldName\": \"b\",\n" +
+                "                        \"fieldType\": \"String\"\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"modelClassName\": \"String\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "                \"fieldEntryList\": [\n" +
+                "                    {\n" +
+                "                        \"fieldName\": \"c\",\n" +
+                "                        \"fieldType\": \"Integer\"\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"modelClassName\": \"Integer\"\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"response\": {\n" +
+                "            \"modelClassName\": \"void\"\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"uploadZip\": {\n" +
+                "        \"method\": \"post\",\n" +
+                "        \"path\": \"\\\"/zip\\\"\",\n" +
+                "        \"request\": [\n" +
+                "            {\n" +
+                "                \"fieldEntryList\": [\n" +
+                "                    {\n" +
+                "                        \"fieldName\": \"file\",\n" +
+                "                        \"fieldType\": \"MultipartFile\"\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"modelClassName\": \"MultipartFile\"\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"response\": {\n" +
+                "            \"modelClassName\": \"String\"\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"test\": {\n" +
+                "        \"method\": \"post\",\n" +
+                "        \"path\": \"\\\"/test\\\"\",\n" +
+                "        \"request\": [\n" +
+                "            {\n" +
+                "                \"fieldEntryList\": [\n" +
+                "                    {\n" +
+                "                        \"fieldName\": \"file\",\n" +
+                "                        \"fieldType\": \"MultipartFile\"\n" +
+                "                    }\n" +
+                "                ],\n" +
+                "                \"modelClassName\": \"MultipartFile\"\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"response\": {\n" +
+                "            \"modelClassName\": \"String\"\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"test1\": {\n" +
+                "        \"method\": \"post\",\n" +
+                "        \"path\": \"\\\"/test1\\\"\",\n" +
+                "        \"request\": [],\n" +
+                "        \"response\": {\n" +
+                "            \"modelClassName\": \"void\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
+//        jsonObject
+//
+//        String path = "D:\\project\\generate-interface-document\\testDocument\\测试文档.docx";
+//        Document document = new Document();
+//        document.loadFromFile(path);
+//        SectionCollection sections = document.getSections();
+//        Section section = sections.get(0);
+//        TableCollection tables = section.getTables();
+//        Table table = tables.get(0);
+//        //规定范式在表格中的顺序
+//        List<String> order = new ArrayList<>();
+//
+//        map.forEach((interfaceName,v)->{
+//            //接口名
+//            String title = interfaceName;
+//            //入参
+//            List<ClassEntry> request = v.getRequest();
+//            //出参
+//            ClassEntry response = v.getResponse();
+//            //请求方式
+//            String method = v.getMethod();
+//            //请求地址
+//            String requestPath = v.getPath();
+//
+//
+//            //遍历表格中的行
+//            for (int i = 0; i < table.getRows().getCount(); i++)
+//            {
+//                TableRow row = table.getRows().get(i);
+//                //遍历每行中的单元格
+//                for (int j = 0; j < row.getCells().getCount(); j++)
+//                {
+//                    TableCell cell = row.getCells().get(j);
+//                    //遍历单元格中的段落
+//                    for (int k = 0; k < cell.getParagraphs().getCount(); k++)
+//                    {
+//                        Paragraph paragraph = cell.getParagraphs().get(k);
+//                        //${in-paramName}
+//                        String text = paragraph.getText();
+//                        if(i==0){
+//                            order.add(text);
+//                            paragraph.setText(DocModelEnum.getMessageByCode(text));
+//                        }else{
+//                            //根据order的顺序 插入元素
+//                            if("${in-paramName}".equals(order.get(k))){
+//                                ClassEntry classEntry = request.get(k);
+//                                List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
+//                                for (FieldEntry fieldEntry : fieldEntryList) {
+//                                    String prefix = "";
+//                                    setField(table, j, fieldEntry, prefix);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//
+//        document.saveToFile("template/test.docx",FileFormat.Doc);
+
+        System.out.println();
+    }
+
+    /**
+     * 填充单元格
+     * @param table
+     * @param i
+     * @param j
+     * @param fieldEntry
+     * @param prefix
+     */
+    private static void setField(Table table, int j, FieldEntry fieldEntry, String prefix) {
+        TableRow tableRow = table.addRow();
+        CellCollection cells = tableRow.getCells();
+        TableCell tableCell = cells.get(j);
+        Paragraph para = tableCell.getParagraphs().get(0);
+        para.setText(prefix+fieldEntry.getFieldName());
+        if(CollUtil.isNotEmpty(fieldEntry.getFields())){
+            List<FieldEntry> fields = fieldEntry.getFields();
+            for (FieldEntry field : fields) {
+                if(!CollUtil.isNotEmpty(field.getFields())){
+                    setField(table,j,field,prefix+"-");
+                }
+            }
+        }
+    }
+
+    @Override
     public void uploadTemplate(MultipartFile multipartFile) {
 
     }
@@ -134,7 +363,7 @@ public class WordServiceImpl implements WordService {
             interfaceBeanMap.putAll(classOperator.getMethodsInfo(key, value));;
         });
         // TODO: 2023/2/4 处理xml文件
-        System.out.println(interfaceBeanMap);
+        System.out.println(JSON.toJSONString(interfaceBeanMap));
         return null;
     }
 }

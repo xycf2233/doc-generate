@@ -1,6 +1,6 @@
 package com.xycf.generate.common.base;
 
-import com.xycf.generate.common.enums.base.BaseResponseEnums;
+import com.xycf.generate.common.enums.base.BaseResponseEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,14 +31,14 @@ public class BaseResponse<T> {
      * @return
      */
     public static <T> BaseResponse<T> success(T t){
-        return BaseResponse.result(BaseResponseEnums.SUCCESS,t);
+        return BaseResponse.result(BaseResponseEnum.SUCCESS,t);
     }
 
     public static <T> BaseResponse<T> fail(T t){
-        return BaseResponse.result(BaseResponseEnums.FAIL,t);
+        return BaseResponse.result(BaseResponseEnum.FAIL,t);
     }
 
-    public static <T> BaseResponse<T> result(BaseResponseEnums resultCode, T data) {
+    public static <T> BaseResponse<T> result(BaseResponseEnum resultCode, T data) {
         return result(resultCode.getCode(), resultCode.getMessage(), data);
     }
 

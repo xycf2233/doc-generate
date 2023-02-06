@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum BaseResponseEnums {
+public enum BaseResponseEnum {
     SUCCESS("200",null),
     FAIL("500","业务处理失败"),
     ;
