@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @Author ztc
- * @Description 类字段注释
+ * @Description 类信息
  * @Date 2023/2/3 11:19
  */
 @Data
