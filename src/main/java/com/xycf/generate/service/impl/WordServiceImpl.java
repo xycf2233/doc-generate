@@ -5,10 +5,9 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.spire.doc.*;
-import com.spire.doc.collections.CellCollection;
-import com.spire.doc.collections.SectionCollection;
-import com.spire.doc.collections.TableCollection;
+import com.spire.doc.collections.*;
 import com.spire.doc.documents.Paragraph;
+import com.spire.doc.fields.TextRange;
 import com.xycf.generate.common.enums.RedisConstants;
 import com.xycf.generate.common.enums.base.DocModelEnum;
 import com.xycf.generate.config.DocConfig;
@@ -19,6 +18,7 @@ import com.xycf.generate.entity.InterfaceBean;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.WordService;
+import com.xycf.generate.util.FileUtil;
 import com.xycf.generate.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author ztc
@@ -113,180 +114,140 @@ public class WordServiceImpl implements WordService {
 //        System.out.println();
     }
 
-    public static void main(String[] args) {
-        JSONObject jsonObject = JSON.parseObject("{\n" +
-                "    \"generateDocument\": {\n" +
-                "        \"method\": \"post\",\n" +
-                "        \"path\": \"\\\"/generateDocument\\\"\",\n" +
-                "        \"request\": [\n" +
-                "            {\n" +
-                "                \"fieldEntryList\": [\n" +
-                "                    {\n" +
-                "                        \"fieldExplain\": \"唯一标识\",\n" +
-                "                        \"fieldName\": \"key\",\n" +
-                "                        \"fieldType\": \"String\"\n" +
-                "                    },\n" +
-                "                    {\n" +
-                "                        \"fieldExplain\": \"控制层文件路径\",\n" +
-                "                        \"fieldName\": \"controllerDirs\",\n" +
-                "                        \"fieldType\": \"List\"\n" +
-                "                    },\n" +
-                "                    {\n" +
-                "                        \"fieldExplain\": \"实体层文件路径\",\n" +
-                "                        \"fieldName\": \"entityDirs\",\n" +
-                "                        \"fieldType\": \"List\"\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"modelClassName\": \"GenerateDocumentReq\",\n" +
-                "                \"modelCommentText\": \"\"\n" +
-                "            }\n" +
-                "        ],\n" +
-                "        \"response\": {\n" +
-                "            \"modelClassName\": \"void\"\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"test2\": {\n" +
-                "        \"method\": \"post\",\n" +
-                "        \"path\": \"\\\"/test2\\\"\",\n" +
-                "        \"request\": [\n" +
-                "            {\n" +
-                "                \"fieldEntryList\": [\n" +
-                "                    {\n" +
-                "                        \"fieldName\": \"a\",\n" +
-                "                        \"fieldType\": \"String\"\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"modelClassName\": \"String\"\n" +
-                "            },\n" +
-                "            {\n" +
-                "                \"fieldEntryList\": [\n" +
-                "                    {\n" +
-                "                        \"fieldName\": \"b\",\n" +
-                "                        \"fieldType\": \"String\"\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"modelClassName\": \"String\"\n" +
-                "            },\n" +
-                "            {\n" +
-                "                \"fieldEntryList\": [\n" +
-                "                    {\n" +
-                "                        \"fieldName\": \"c\",\n" +
-                "                        \"fieldType\": \"Integer\"\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"modelClassName\": \"Integer\"\n" +
-                "            }\n" +
-                "        ],\n" +
-                "        \"response\": {\n" +
-                "            \"modelClassName\": \"void\"\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"uploadZip\": {\n" +
-                "        \"method\": \"post\",\n" +
-                "        \"path\": \"\\\"/zip\\\"\",\n" +
-                "        \"request\": [\n" +
-                "            {\n" +
-                "                \"fieldEntryList\": [\n" +
-                "                    {\n" +
-                "                        \"fieldName\": \"file\",\n" +
-                "                        \"fieldType\": \"MultipartFile\"\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"modelClassName\": \"MultipartFile\"\n" +
-                "            }\n" +
-                "        ],\n" +
-                "        \"response\": {\n" +
-                "            \"modelClassName\": \"String\"\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"test\": {\n" +
-                "        \"method\": \"post\",\n" +
-                "        \"path\": \"\\\"/test\\\"\",\n" +
-                "        \"request\": [\n" +
-                "            {\n" +
-                "                \"fieldEntryList\": [\n" +
-                "                    {\n" +
-                "                        \"fieldName\": \"file\",\n" +
-                "                        \"fieldType\": \"MultipartFile\"\n" +
-                "                    }\n" +
-                "                ],\n" +
-                "                \"modelClassName\": \"MultipartFile\"\n" +
-                "            }\n" +
-                "        ],\n" +
-                "        \"response\": {\n" +
-                "            \"modelClassName\": \"String\"\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"test1\": {\n" +
-                "        \"method\": \"post\",\n" +
-                "        \"path\": \"\\\"/test1\\\"\",\n" +
-                "        \"request\": [],\n" +
-                "        \"response\": {\n" +
-                "            \"modelClassName\": \"void\"\n" +
-                "        }\n" +
-                "    }\n" +
-                "}");
-//        jsonObject
-//
-//        String path = "D:\\project\\generate-interface-document\\testDocument\\测试文档.docx";
-//        Document document = new Document();
-//        document.loadFromFile(path);
-//        SectionCollection sections = document.getSections();
-//        Section section = sections.get(0);
-//        TableCollection tables = section.getTables();
-//        Table table = tables.get(0);
-//        //规定范式在表格中的顺序
-//        List<String> order = new ArrayList<>();
-//
-//        map.forEach((interfaceName,v)->{
-//            //接口名
-//            String title = interfaceName;
-//            //入参
-//            List<ClassEntry> request = v.getRequest();
-//            //出参
-//            ClassEntry response = v.getResponse();
-//            //请求方式
-//            String method = v.getMethod();
-//            //请求地址
-//            String requestPath = v.getPath();
-//
-//
-//            //遍历表格中的行
-//            for (int i = 0; i < table.getRows().getCount(); i++)
-//            {
-//                TableRow row = table.getRows().get(i);
-//                //遍历每行中的单元格
-//                for (int j = 0; j < row.getCells().getCount(); j++)
-//                {
-//                    TableCell cell = row.getCells().get(j);
-//                    //遍历单元格中的段落
-//                    for (int k = 0; k < cell.getParagraphs().getCount(); k++)
-//                    {
-//                        Paragraph paragraph = cell.getParagraphs().get(k);
-//                        //${in-paramName}
-//                        String text = paragraph.getText();
-//                        if(i==0){
-//                            order.add(text);
-//                            paragraph.setText(DocModelEnum.getMessageByCode(text));
-//                        }else{
-//                            //根据order的顺序 插入元素
-//                            if("${in-paramName}".equals(order.get(k))){
-//                                ClassEntry classEntry = request.get(k);
-//                                List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
-//                                for (FieldEntry fieldEntry : fieldEntryList) {
-//                                    String prefix = "";
-//                                    setField(table, j, fieldEntry, prefix);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//
-//        document.saveToFile("template/test.docx",FileFormat.Doc);
+    public void test(String key,Map<String,InterfaceBean> map) {
+        Document document = new Document();
+        map.forEach((interfaceName,v)->{
+            //接口名
+            String title = interfaceName;
+            //入参
+            List<ClassEntry> request = v.getRequest();
+            //出参
+            ClassEntry response = v.getResponse();
+            //请求方式
+            String method = v.getMethod();
+            //请求地址
+            String requestPath = v.getPath();
+
+            Section section = document.addSection();
+
+            //接口名
+            Paragraph titleParagraph = section.addParagraph();
+            TextRange textRange = titleParagraph.appendText(title);
+            textRange.getCharacterFormat().setFontSize(20f);
+            textRange.getCharacterFormat().setBold(true);
+
+            //访问地址
+            Paragraph requestPathParagraph = section.addParagraph();
+            requestPathParagraph.appendText(requestPath);
+
+            //请求方式
+            Paragraph requestMethodParagraph = section.addParagraph();
+            requestMethodParagraph.appendText(method);
+
+            //输入参数
+            Paragraph requestParamParagraph = section.addParagraph();
+            requestParamParagraph.appendText("输入参数：");
+
+            //插入表格
+            Table table = section.addTable();
+            int rowNum = calculateRequestNum(request);
+            log.info("表格需要添加{}行",rowNum);
+
+            for (int row = 0; row < rowNum; row++) {
+                ClassEntry classEntry = request.get(row);
+                List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
+                FieldEntry fieldEntry = fieldEntryList.get(row);
+                TableRow tableRow = table.addRow();
+                //${in-paramName}	${in-type}	${in-isMust}	${in-description}	${in-remarks}
+                log.info("表格当前行数为：{}",row+1);
+                for (int j = 0; j < 5; j++) {
+                    TableCell tableCell = tableRow.addCell();
+                    Paragraph inParamName = tableCell.addParagraph();
+                    switch (j){
+                        case 0:
+                            inParamName.appendText(fieldEntry.getFieldName());
+                            break;
+                        case 1:
+                            inParamName.appendText(fieldEntry.getFieldType());
+                            break;
+                        case 2:
+                            inParamName.appendText("是否必须");
+                            break;
+                        case 3:
+                            inParamName.appendText(fieldEntry.getFieldExplain());
+                            break;
+                        case 4:
+                            inParamName.appendText("备注");
+                            break;
+                    }
+                }
+                row = subFieldAddRow(table, row, fieldEntry);
+            }
+
+            document.saveToFile("template"+File.separator+key+File.separator+"test"+ FileUtil.createFileId() +".docx",FileFormat.Doc);
+        });
+
+
 
         System.out.println();
+    }
+
+    private int subFieldAddRow(Table table, int row, FieldEntry fieldEntry) {
+        while(CollUtil.isNotEmpty(fieldEntry.getFields())){
+            List<FieldEntry> fields = fieldEntry.getFields();
+            for (FieldEntry field : fields) {
+                TableRow tableRow2 = table.addRow();
+                row++;
+                log.info("表格当前行数为：{}",row+1);
+                for (int j = 0; j < 5; j++) {
+                    TableCell tableCell = tableRow2.addCell();
+                    Paragraph inParamName = tableCell.addParagraph();
+                    switch (j){
+                        case 0:
+                            inParamName.appendText(field.getFieldName());
+                            break;
+                        case 1:
+                            inParamName.appendText(field.getFieldType());
+                            break;
+                        case 2:
+                            inParamName.appendText("是否必须");
+                            break;
+                        case 3:
+                            inParamName.appendText(field.getFieldExplain());
+                            break;
+                        case 4:
+                            inParamName.appendText("备注");
+                            break;
+                    }
+                }
+                row = subFieldAddRow(table,row,field);
+            }
+        }
+        return row;
+    }
+
+    /**
+     * 计算请求入参的行数
+     * @param request
+     * @return
+     */
+    private int calculateRequestNum(List<ClassEntry> request) {
+        AtomicInteger num = new AtomicInteger(0);
+        for (ClassEntry classEntry : request) {
+            calculateFieldEntryNum(classEntry.getFieldEntryList(),num);
+        }
+        return num.get();
+    }
+
+    private void calculateFieldEntryNum(List<FieldEntry> fieldEntries,AtomicInteger num){
+        if(CollUtil.isNotEmpty(fieldEntries)){
+            num.addAndGet(fieldEntries.size());
+        }
+        for (FieldEntry fieldEntry : fieldEntries) {
+            if(CollUtil.isNotEmpty(fieldEntry.getFields())){
+                calculateFieldEntryNum(fieldEntry.getFields(),num);
+            }
+        }
     }
 
     /**
@@ -297,8 +258,9 @@ public class WordServiceImpl implements WordService {
      * @param fieldEntry
      * @param prefix
      */
-    private static void setField(Table table, int j, FieldEntry fieldEntry, String prefix) {
+    private static void setField(Table table, int j, FieldEntry fieldEntry, String prefix,AtomicInteger rows) {
         TableRow tableRow = table.addRow();
+        rows.addAndGet(1);
         CellCollection cells = tableRow.getCells();
         TableCell tableCell = cells.get(j);
         Paragraph para = tableCell.getParagraphs().get(0);
@@ -307,7 +269,7 @@ public class WordServiceImpl implements WordService {
             List<FieldEntry> fields = fieldEntry.getFields();
             for (FieldEntry field : fields) {
                 if(!CollUtil.isNotEmpty(field.getFields())){
-                    setField(table,j,field,prefix+"-");
+                    setField(table,j,field,prefix+"-",rows);
                 }
             }
         }
@@ -364,6 +326,8 @@ public class WordServiceImpl implements WordService {
         });
         // TODO: 2023/2/4 处理xml文件
         System.out.println(JSON.toJSONString(interfaceBeanMap));
+
+        test(key,interfaceBeanMap);
         return null;
     }
 }

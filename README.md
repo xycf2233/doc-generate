@@ -7,6 +7,7 @@ ${method} 请求方式
 ${request} 入参示例json格式  
 ${response} 出参示例json格式  
 ${title}  接口名称  
+${table} 表格
 ---
 ### 入参：
 ${in-paramName} 参数名  

@@ -30,6 +30,7 @@ public enum DocModelEnum {
     REQUEST("${request}", "入参示例json格式"),
     RESPONSE("${response}", "出参示例json格式"),
     TITLE("${title}", "接口名称"),
+    TABLE("${table}", "表格"),
     ;
     private String code;
     private String message;
@@ -46,7 +47,7 @@ public enum DocModelEnum {
         if(!any.isPresent()){
             throw new AppException("未找到约定范式code："+code);
         }
-        return String.valueOf(any.get());
+        return String.valueOf(any.get().getMessage());
     }
 
 }
