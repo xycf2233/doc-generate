@@ -162,6 +162,52 @@ public class UploadServiceImpl implements UploadService {
     }
 
     /**
+     * 上传模板文件
+     * @param file
+     * @param key
+     * @return
+     */
+    @Override
+    public void uploadTemplate(MultipartFile file, String key) {
+        String dir = docConfig.getTemplate() + File.separator + key;
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        FileUtil.mkDir(dir);
+        String name = file.getOriginalFilename();
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(dir+File.separator+name));
+            bis = new BufferedInputStream(file.getInputStream());
+            byte[] b = new byte[1024];
+            int read = bis.read(b);
+            while (read!=-1){
+                bos.write(b);
+                read = bis.read(b);
+            }
+            bos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try{
+                if(bos!=null){
+                    bos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                try{
+                    if(bis!=null){
+                        bis.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        //模板地址存入缓存
+        redisUtils.setCacheObject(RedisConstants.TEMPLATE_DIR+key,dir+File.separator+name);
+    }
+
+    /**
      * 将文件夹下所有文件视为实体层文件放入map
      *
      * @param entityFileMap 实体层文件map

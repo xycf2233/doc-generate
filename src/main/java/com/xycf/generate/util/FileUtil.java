@@ -335,6 +335,11 @@ public class FileUtil {
                             //msg.setLength(0);
                             msg.append("存在重复的文件名：" + zipFileName);
                         }
+                        if(!zipFileName.contains(".java")){
+                            continue;
+                        }
+                        String unzipDir = zipFileName.substring(0,zipFileName.lastIndexOf("/"));
+                        mkDir(targetPath + File.separator + unzipDir);
                         // 文件
                         File targetFile = new File(targetPath + File.separator + zipFileName);
                         os = new BufferedOutputStream(new FileOutputStream(targetFile));
@@ -707,6 +712,11 @@ public class FileUtil {
                     msg.setLength(0);
                     msg.append("存在重复的文件名：" + sevenZFileName);
                 }
+                if(!sevenZFileName.contains(".java")){
+                    continue;
+                }
+                String unzipDir = sevenZFileName.substring(0,sevenZFileName.lastIndexOf("/"));
+                mkDir(targetPath + File.separator + unzipDir);
                 FileOutputStream out = new FileOutputStream(targetPath
                         + File.separator + sevenZFileName);
                 byte[] content = new byte[(int) entry.getSize()];

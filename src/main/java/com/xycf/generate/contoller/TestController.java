@@ -29,13 +29,6 @@ public class TestController {
     @Resource
     private DecompressionService decompressionService;
 
-    @ApiOperation(value = "word转换xml")
-    @PostMapping("/test")
-    public String test(@RequestParam("file") MultipartFile file){
-        wordService.changeToXml(file);
-        return null;
-    }
-
 
     @ApiOperation(value = "解压")
     @PostMapping(value = "/test1",name = "abc")
@@ -53,5 +46,10 @@ public class TestController {
     @PostMapping("/generateDocument")
     public void generateDocument(@Valid @RequestBody GenerateDocumentReq req){
         String s = wordService.generateDocument(req.getKey(), req.getControllerDirs(), req.getEntityDirs());
+    }
+
+    @PostMapping("/generateDocumentForTemplate")
+    public void generateDocumentForTemplate(@Valid @RequestBody GenerateDocumentReq req){
+        String s = wordService.generateDocumentForTemplate(req.getKey(), req.getControllerDirs(), req.getEntityDirs());
     }
 }
