@@ -19,12 +19,6 @@ public interface DocService {
     void parseXml(String filePath);
 
     /**
-     * 解析xml
-     * @param filePath
-     */
-    void parseXml(String filePath);
-
-    /**
      * 上传模板文件
      * @param multipartFile word/excel
      */
