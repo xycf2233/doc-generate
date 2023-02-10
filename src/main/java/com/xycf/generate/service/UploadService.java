@@ -28,4 +28,6 @@ public interface UploadService {
      * @return 扫描解压文件后的到的 控制层map 和 实体层map
      */
     void scanUnZipDir(File file, List<String> controllerDirs, List<String> entityDirs, Map<String, String> controllerFileMap,Map<String, String> entityFileMap);
+
+    void uploadTemplate(MultipartFile file, String key);
 }

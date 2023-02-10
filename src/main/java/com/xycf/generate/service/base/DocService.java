@@ -13,13 +13,6 @@ import java.util.List;
 public interface DocService {
 
     /**
-     * 将上传的文件转换成xml文档
-     * @param multipartFile 上传的word文件
-     * @return xml文件路径
-     */
-    String changeToXml(MultipartFile multipartFile);
-
-    /**
      * 解析xml
      * @param filePath
      */
@@ -45,6 +38,15 @@ public interface DocService {
      * @return
      */
     String generateDocument(String key, List<String> controllerDirs, List<String> entityDirs);
+
+    /**
+     * 生成word文档
+     * @param key            每次操作的唯一标识   保证上传操作和生成文档操作的一致性，前端传
+     * @param controllerDirs 用户声明的控制层文件夹 可为null
+     * @param entityDirs     用户声明的实体层文件夹 不可为null
+     * @return
+     */
+    String generateDocumentForTemplate(String key, List<String> controllerDirs, List<String> entityDirs);
 
 
 

@@ -25,4 +25,14 @@ public class RedisConstants {
      * 存储解析的实体层文件夹
      */
     public static final String ENTITY_DIR = "entity:";
+
+    /**
+     * 存储模板文件的文件夹
+     */
+    public static final String TEMPLATE_DIR = "template:";
+
+    /**
+     * 存储模板文件的文件夹
+     */
+    public static final String OUTPUT_DIR = "output:";
 }
