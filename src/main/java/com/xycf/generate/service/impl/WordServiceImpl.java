@@ -17,7 +17,6 @@ import com.xycf.generate.entity.*;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.WordService;
-import com.xycf.generate.t.Column;
 import com.xycf.generate.util.FileUtil;
 import com.xycf.generate.util.RedisUtils;
 import fr.opensagres.xdocreport.core.XDocReportException;
