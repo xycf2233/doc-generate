@@ -246,7 +246,7 @@ public class UploadServiceImpl implements UploadService {
         File[] files = controllerDir.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
-                putControllerMap(controllerFileMap, controllerDir);
+                putControllerMap(controllerFileMap, file);
             } else {
                 ClassOperator classOperator = new ClassOperator();
                 ClassDoc classDoc = classOperator.getClassDoc(file.getAbsolutePath());

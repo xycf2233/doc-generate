@@ -3,6 +3,7 @@ package com.xycf.generate.operator;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.sun.javadoc.*;
 import com.xycf.generate.common.enums.ControllerAnnotationEnum;
 import com.xycf.generate.common.enums.RedisConstants;
@@ -58,6 +59,9 @@ public class ClassOperator {
         }
         ClassEntry classEntry = initClassDoc.getClassEntry();
         ClassDoc classDoc = initClassDoc.getClassDoc();
+        if(classDoc==null){
+            return null;
+        }
         // 获取类的名称
         classEntry.setModelClassName(getClassName(classDoc));
         // 获取类上的所有注释
@@ -118,7 +122,8 @@ public class ClassOperator {
      * @return 类注释
      */
     public String getClassComment(ClassDoc classDoc) {
-        String classComment = ReflectUtil.getFieldValue(classDoc, "documentation").toString();
+        Object documentation = ReflectUtil.getFieldValue(classDoc, "documentation");
+        String classComment = documentation==null?"":documentation.toString();
         String spitStr = "\n";
         StringBuilder classDescription = new StringBuilder();
         for (String msg : classComment.split(spitStr)) {
@@ -128,7 +133,6 @@ public class ClassOperator {
         }
         return classDescription.toString();
     }
-
     /**
      * 获取类上注释
      * @param javaBeanFilePath 类绝对路径
@@ -335,7 +339,9 @@ public class ClassOperator {
             if(CharSequenceUtil.isNotEmpty(requestEntityPath)){
                 //获取类信息
                 ClassEntry classEntry = getClassEntry(requestEntityPath);
-                request.add(classEntry);
+                if(classEntry!=null){
+                    request.add(classEntry);
+                }
             }else{
                 //未找到 则默认是 非用户定义的实体 比如 String、Integer
                 ClassEntry classEntry = new ClassEntry();

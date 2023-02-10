@@ -447,12 +447,12 @@ public class WordServiceImpl implements WordService {
                 String requestBody = "";
                 String responseBody = "";
                 context.put(DocModelEnum.TITLE.getCode(), k);
-                context.put(DocModelEnum.INTERFACE_ADDRESS.getCode(), v.getPath());
+                context.put(DocModelEnum.INTERFACE_ADDRESS.getCode(),CharSequenceUtil.isEmpty( v.getPath())?"": v.getPath());
                 context.put(DocModelEnum.REQUEST_PARAM.getCode(), requestParams);
                 context.put(DocModelEnum.RESPONSE_PARAM.getCode(), responseParams);
                 context.put(DocModelEnum.REQUEST_BODY.getCode(), requestBody);
                 context.put(DocModelEnum.RESPONSE_BODY.getCode(), responseBody);
-                context.put(DocModelEnum.METHOD.getCode(), v.getMethod());
+                context.put(DocModelEnum.METHOD.getCode(), CharSequenceUtil.isEmpty(v.getMethod())?"":v.getMethod());
 
                 //创建字段元数据
                 FieldsMetadata fm = report.createFieldsMetadata();
