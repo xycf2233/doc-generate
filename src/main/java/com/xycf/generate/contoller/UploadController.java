@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 /**
  * @Author ztc
- * @Description 上传文件控制层56415212
+ * @Description 上传文件控制层
  * @Date 2023/2/2 17:06
  */
 @RestController
