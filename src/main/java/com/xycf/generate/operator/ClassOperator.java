@@ -1,14 +1,12 @@
 package com.xycf.generate.operator;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.sun.javadoc.*;
-import com.xycf.generate.common.enums.ControllerAnnotationEnum;
-import com.xycf.generate.common.enums.RedisConstants;
-import com.xycf.generate.common.enums.RequestMethodEnum;
-import com.xycf.generate.common.enums.RequestPathEnum;
+import com.xycf.generate.common.enums.*;
 import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.entity.ClassEntry;
 import com.xycf.generate.entity.ControllerOperatorBean;
@@ -49,6 +47,7 @@ public class ClassOperator {
 
     /**
      * 解析类文件
+     *
      * @param javaBeanFilePath 类的绝对路径
      * @return 类文件信息：类名、类注释、属性名、属性类型、属性注释
      */
@@ -59,7 +58,7 @@ public class ClassOperator {
         }
         ClassEntry classEntry = initClassDoc.getClassEntry();
         ClassDoc classDoc = initClassDoc.getClassDoc();
-        if(classDoc==null){
+        if (classDoc == null) {
             return null;
         }
         // 获取类的名称
@@ -73,6 +72,7 @@ public class ClassOperator {
 
     /**
      * 解析类文件
+     *
      * @param classDoc 类信息文档
      * @return 类文件信息：类名、类注释、属性名、属性类型、属性注释
      */
@@ -89,24 +89,40 @@ public class ClassOperator {
 
     /**
      * 获取类中属性名称、类型和注释
+     *
      * @param classDoc 类信息实体
      * @return 属性信息集合
      */
-    public List<FieldEntry> getFieldEntrys(ClassDoc classDoc){
+    public List<FieldEntry> getFieldEntrys(ClassDoc classDoc) {
         List<FieldEntry> entrys = new ArrayList<>();
         FieldDoc[] fields = classDoc.fields(false);
+
         for (FieldDoc field : fields) {
-            entrys.add(new FieldEntry(field.name(), field.type().typeName(), field.commentText()));
+            boolean isMust = false;
+            AnnotationDesc[] annotations = field.annotations();
+            for (AnnotationDesc annotation : annotations) {
+                String annotationName = annotation.annotationType().typeName();
+                isMust = IsMustEnum.isMust(annotationName);
+            }
+            FieldEntry build = FieldEntry.builder()
+                    .fieldName(field.name())
+                    .fieldType(field.type().typeName())
+                    .fieldExplain(field.commentText())
+                    .must(isMust ? "必须" : "非必须")
+                    .defaultValue(DefaultEnum.getDefaultValue(field.type().toString()))
+                    .build();
+            entrys.add(build);
         }
         return entrys;
     }
 
     /**
      * 获取类中属性名称、类型和注释
+     *
      * @param javaBeanFilePath 类绝对路径
      * @return 属性信息集合
      */
-    public List<FieldEntry> getFieldEntrys(String javaBeanFilePath){
+    public List<FieldEntry> getFieldEntrys(String javaBeanFilePath) {
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
         List<FieldEntry> entrys = new ArrayList<>();
         FieldDoc[] fields = classDoc.fields(false);
@@ -118,12 +134,13 @@ public class ClassOperator {
 
     /**
      * 获取类上注释
+     *
      * @param classDoc 类信息实体
      * @return 类注释
      */
     public String getClassComment(ClassDoc classDoc) {
         Object documentation = ReflectUtil.getFieldValue(classDoc, "documentation");
-        String classComment = documentation==null?"":documentation.toString();
+        String classComment = documentation == null ? "" : documentation.toString();
         String spitStr = "\n";
         StringBuilder classDescription = new StringBuilder();
         for (String msg : classComment.split(spitStr)) {
@@ -133,8 +150,10 @@ public class ClassOperator {
         }
         return classDescription.toString();
     }
+
     /**
      * 获取类上注释
+     *
      * @param javaBeanFilePath 类绝对路径
      * @return 类注释
      */
@@ -152,30 +171,33 @@ public class ClassOperator {
 
     /**
      * 获取类名
+     *
      * @param classDoc 类信息实体
      * @return
      */
-    public String getClassName(ClassDoc classDoc){
+    public String getClassName(ClassDoc classDoc) {
         return classDoc.name();
     }
 
     /**
      * 获取类名
+     *
      * @param javaBeanFilePath 类的绝对路径
      * @return
      */
-    public String getClassName(String javaBeanFilePath){
+    public String getClassName(String javaBeanFilePath) {
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
         return classDoc.name();
     }
 
     /**
      * 获取ClassDoc类文档实体
+     *
      * @param javaBeanFilePath 类绝对类路径
      * @return
      */
-    public ClassDoc getClassDoc(String javaBeanFilePath){
-        if(!javaBeanFilePath.endsWith(".java")){
+    public ClassDoc getClassDoc(String javaBeanFilePath) {
+        if (!javaBeanFilePath.endsWith(".java")) {
             return null;
         }
         InitClassDoc initClassDoc = new InitClassDoc().invoke(javaBeanFilePath);
@@ -184,26 +206,28 @@ public class ClassOperator {
 
     /**
      * 获取类中方法集合
+     *
      * @param javaBeanFilePath 类绝对路径
      * @return
      */
-    public MethodDoc[] getClassMethods(String javaBeanFilePath){
+    public MethodDoc[] getClassMethods(String javaBeanFilePath) {
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
         return classDoc.methods();
     }
 
     /**
      * 是否是控制层文件
+     *
      * @param classDoc 类信息文档
      * @return true/false
      */
-    public boolean isController(ClassDoc classDoc){
+    public boolean isController(ClassDoc classDoc) {
         AnnotationDesc[] annotations = classDoc.annotations();
         for (AnnotationDesc annotation : annotations) {
             AnnotationTypeDoc annotationTypeDoc = annotation.annotationType();
             String annotationName = annotationTypeDoc.typeName();
             boolean isControllerAnnotation = ControllerAnnotationEnum.isControllerAnnotation(annotationName);
-            if(isControllerAnnotation){
+            if (isControllerAnnotation) {
                 return true;
             }
         }
@@ -212,17 +236,18 @@ public class ClassOperator {
 
     /**
      * 是否是控制层文件
+     *
      * @param javaBeanFilePath 类绝对路径
      * @return true/false
      */
-    public boolean isController(String javaBeanFilePath){
+    public boolean isController(String javaBeanFilePath) {
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
         AnnotationDesc[] annotations = classDoc.annotations();
         for (AnnotationDesc annotation : annotations) {
             AnnotationTypeDoc annotationTypeDoc = annotation.annotationType();
             String annotationName = annotationTypeDoc.typeName();
             boolean isControllerAnnotation = ControllerAnnotationEnum.isControllerAnnotation(annotationName);
-            if(isControllerAnnotation){
+            if (isControllerAnnotation) {
                 return true;
             }
         }
@@ -231,22 +256,24 @@ public class ClassOperator {
 
     /**
      * 获取类中方法集合
+     *
      * @param classDoc 类信息文档
      * @return
      */
-    public MethodDoc[] getClassMethods(ClassDoc classDoc){
+    public MethodDoc[] getClassMethods(ClassDoc classDoc) {
         return classDoc.methods();
     }
 
     /**
      * 解析类中方法的入参出参
-     * @param key 唯一标识
+     *
+     * @param key              唯一标识
      * @param javaBeanFilePath 类绝对路径
      * @return
      */
-    public Map<String,InterfaceBean> getMethodsInfo(String key,String javaBeanFilePath){
+    public Map<String, InterfaceBean> getMethodsInfo(String key, String javaBeanFilePath) {
 
-        Map<String,InterfaceBean> interfaceBeanMap = new HashMap<>();
+        Map<String, InterfaceBean> interfaceBeanMap = new HashMap<>();
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
         MethodDoc[] classMethods = getClassMethods(classDoc);
         for (MethodDoc classMethod : classMethods) {
@@ -258,8 +285,7 @@ public class ClassOperator {
             boolean flag = false;
 
 
-
-            String requestMethod  = null;
+            String requestMethod = null;
             String requestPath = null;
 
             //注解 数组
@@ -269,7 +295,7 @@ public class ClassOperator {
                 //注解名称 PostMapping
                 String annotationName = annotationTypeDoc.typeName();
                 requestMethod = RequestMethodEnum.isRequestMethod(annotationName);
-                if(CharSequenceUtil.isNotEmpty(requestMethod)){
+                if (CharSequenceUtil.isNotEmpty(requestMethod)) {
                     flag = true;
                     AnnotationDesc.ElementValuePair[] elementValuePairs = annotation.elementValues();
                     for (AnnotationDesc.ElementValuePair elementValuePair : elementValuePairs) {
@@ -281,14 +307,14 @@ public class ClassOperator {
                         String annotationValueName = element.name();
 
                         boolean isRequestPath = RequestPathEnum.isRequestPath(annotationValueName);
-                        if(isRequestPath){
+                        if (isRequestPath) {
                             requestPath = StrUtil.str(annotationValue, Charset.defaultCharset());
                             interfaceBean.setPath(requestPath);
                         }
                     }
                 }
             }
-            if(!flag){
+            if (!flag) {
                 continue;
             }
             //封装请求方式
@@ -297,25 +323,79 @@ public class ClassOperator {
             List<ClassEntry> requestInfo = getRequestInfo(key, classMethod);
             interfaceBean.setRequest(requestInfo);
             //返回类型
-            ClassEntry responseClassEntry  = getResponseInfo(key, classMethod);
+            ClassEntry responseClassEntry = getResponseInfo(key, classMethod);
             interfaceBean.setResponse(responseClassEntry);
 
-            //todo 入参示例json格式
-            String requestBody = getRequestBody(requestInfo);
-            //todo 出参示例json格式
-
-            interfaceBeanMap.put(classMethodName,interfaceBean);
+            //入参示例json格式
+            interfaceBean.setRequestBody(getRequestBody(requestInfo));
+            //出参示例json格式
+            interfaceBean.setResponseBody(getResponseBody(responseClassEntry));
+            interfaceBeanMap.put(classMethodName, interfaceBean);
         }
         return interfaceBeanMap;
     }
 
     /**
+     * 根据返回类生成返回示例
+     *
+     * @param classEntry
+     * @return
+     */
+    private String getResponseBody(ClassEntry classEntry) {
+        Map<String, Object> map;
+        if (!DefaultEnum.contains(classEntry.getModelClassName())) {
+            //是自定义类
+            List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
+            map = getJsonMap(fieldEntryList);
+        } else {
+            //如果不是自定义类 那么 返回默认值
+            if (CollUtil.isEmpty(classEntry.getFieldEntryList())) {
+                return "";
+            }
+            return classEntry.getFieldEntryList().get(0).getDefaultValue();
+        }
+        return map.size() == 0 ? "" : JSON.toJSONString(map);
+    }
+
+    /**
      * 根据入参类生成入参示例 设置字段默认值
+     *
      * @param requestInfo
      * @return
      */
     private String getRequestBody(List<ClassEntry> requestInfo) {
-        return null;
+        Map<String, Object> map = new HashMap<>();
+        for (ClassEntry classEntry : requestInfo) {
+            if (!DefaultEnum.contains(classEntry.getModelClassName())) {
+                //是自定义类
+                List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
+                map = getJsonMap(fieldEntryList);
+            } else {
+                FieldEntry fieldEntry = classEntry.getFieldEntryList().get(0);
+                //如果不是自定义类 那么 返回默认值
+                return fieldEntry.getDefaultValue();
+            }
+        }
+        return map.size() == 0 ? "" : JSON.toJSONString(map);
+    }
+
+    private Map<String, Object> getJsonMap(List<FieldEntry> fieldEntryList) {
+        if (CollUtil.isEmpty(fieldEntryList)) {
+            return new HashMap<>();
+        }
+        Map<String, Object> map = new HashMap<>();
+        for (FieldEntry fieldEntry : fieldEntryList) {
+            if (DefaultEnum.contains(fieldEntry.getFieldType())) {
+                map.put(fieldEntry.getFieldName(), fieldEntry.getDefaultValue());
+            } else {
+                List<FieldEntry> fields = fieldEntry.getFields();
+                if (CollUtil.isNotEmpty(fields)) {
+                    Map<String, Object> jsonMap = getJsonMap(fields);
+                    map.put(fieldEntry.getFieldName(), jsonMap);
+                }
+            }
+        }
+        return map;
     }
 
     private ClassEntry getResponseInfo(String key, MethodDoc classMethod) {
@@ -329,10 +409,10 @@ public class ClassOperator {
         //获取缓存中所有的实体文件 如果存在 parameterType.class的文件 那么获取类文档信息
         String requestEntityPath = redisUtils.getCacheMapValue(RedisConstants.ENTITY_DIR + key, returnClassName);
         //是否在实体层文件中找到了该出参类型
-        if(CharSequenceUtil.isNotEmpty(requestEntityPath)){
+        if (CharSequenceUtil.isNotEmpty(requestEntityPath)) {
             //获取类信息
             responseClassEntry = getClassEntry(requestEntityPath);
-        }else{
+        } else {
             //未找到 则默认是 非用户定义的实体 比如 String、Integer
             responseClassEntry.setModelClassName(returnClassName);
         }
@@ -350,47 +430,63 @@ public class ClassOperator {
             String name = parameter.name();
             //获取缓存中所有的实体文件 如果存在 parameterType.class的文件 那么获取类文档信息
             String requestEntityPath = redisUtils.getCacheMapValue(RedisConstants.ENTITY_DIR + key, parameterType);
+            //获取该入参参数 是否必须
+            boolean isMust = getIsMust(parameter);
             //是否在实体层文件中找到了该入参类型
-            if(CharSequenceUtil.isNotEmpty(requestEntityPath)){
+            if (CharSequenceUtil.isNotEmpty(requestEntityPath)) {
                 //获取类信息
                 ClassEntry classEntry = getClassEntry(requestEntityPath);
-                if(classEntry!=null){
+                classEntry.setMust(isMust ? "必须" : "非必须");
+                if (classEntry != null) {
                     request.add(classEntry);
                 }
-            }else{
+            } else {
                 //未找到 则默认是 非用户定义的实体 比如 String、Integer
                 ClassEntry classEntry = new ClassEntry();
+                classEntry.setMust(isMust ? "必须" : "非必须");
+
                 List<FieldEntry> fieldEntryList = new ArrayList<>();
                 FieldEntry fieldEntry = new FieldEntry();
                 classEntry.setModelClassName(parameterType);
                 fieldEntry.setFieldType(parameterType);
                 fieldEntry.setFieldName(name);
+                //todo 获取该入参参数默认值
+                fieldEntry.setDefaultValue("");
+
                 fieldEntryList.add(fieldEntry);
+
                 classEntry.setFieldEntryList(fieldEntryList);
+
                 request.add(classEntry);
-            }
-            AnnotationDesc[] annotations = parameter.annotations();
-            for (AnnotationDesc annotation : annotations) {
-//                String s = annotation.annotationType().typeName();
-//                annotation.annotationType().
-//                System.out.println();
             }
         }
         return request;
     }
 
+    private boolean getIsMust(Parameter parameter) {
+        boolean isMust = false;
+        AnnotationDesc[] annotations = parameter.annotations();
+        for (AnnotationDesc annotation : annotations) {
+            String annotationName = annotation.annotationType().typeName();
+            isMust = IsMustEnum.isMust(annotationName);
+        }
+        return isMust;
+    }
+
 
     /**
      * 判断方法是否是mvc方法 todo
+     *
      * @return 是否是mvc方法
      */
-    public boolean isMvcMethod(){
+    public boolean isMvcMethod() {
 
         return false;
     }
 
     /**
      * 获取接口请求路径  todo
+     *
      * @return 接口路径
      */
     public String getRequestPath() {
@@ -399,19 +495,10 @@ public class ClassOperator {
     }
 
 
-
-
-
-
-
-
-
-
-
     private class InitClassDoc {
         private boolean myResult;
         private ClassEntry classEntry;
-        private List<FieldEntry> entrys= new ArrayList<>();
+        private List<FieldEntry> entrys = new ArrayList<>();
         private ClassDoc classDoc;
 
         boolean is() {
@@ -433,7 +520,7 @@ public class ClassOperator {
         public InitClassDoc invoke(String javaBeanFilePath) {
             classEntry = new ClassEntry();
             com.sun.tools.javadoc.Main.execute(new String[]{"-doclet", ClassOperator.class.getName(), "-docletpath",
-                    ClassOperator.class.getResource("/").getPath(), "-encoding", "utf-8","-XDuseUnsharedTable", javaBeanFilePath});
+                    ClassOperator.class.getResource("/").getPath(), "-encoding", "utf-8", "-XDuseUnsharedTable", javaBeanFilePath});
             ClassDoc[] classes = rootDoc.classes();
 
             if (classes == null || classes.length == 0) {

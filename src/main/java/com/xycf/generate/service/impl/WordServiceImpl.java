@@ -396,7 +396,7 @@ public class WordServiceImpl implements WordService {
         dealTemplate(key, interfaceBeanMap);
 
         //合并word
-        FileUtil.mergeWord(docConfig.getOutputDir()+File.separator+key, false);
+        FileUtil.mergeWord(docConfig.getOutputDir() + File.separator + key, false);
         return null;
     }
 
@@ -411,7 +411,7 @@ public class WordServiceImpl implements WordService {
         String templatePath = redisUtils.getCacheObject(RedisConstants.TEMPLATE_DIR + key);
         File file = null;
         if (CharSequenceUtil.isEmpty(templatePath)) {
-          log.warn("未检测到模板内容。使用默认模板");
+            log.warn("未检测到模板内容。使用默认模板");
             String property = System.getProperty("user.dir");
             file = new File(property + "/testDocument/测试文档 - 副本.docx");
         } else {
@@ -451,9 +451,8 @@ public class WordServiceImpl implements WordService {
                 //创建xdocreport上下文对象
                 IContext context = report.createContext();
 
-                // TODO: 2023/2/10 构造入参和出参
-                String requestBody = "";
-                String responseBody = "";
+                String requestBody = CharSequenceUtil.isEmpty(v.getRequestBody()) ? "" : v.getRequestBody();
+                String responseBody = CharSequenceUtil.isEmpty(v.getResponseBody()) ? "" : v.getResponseBody();
                 context.put(DocModelEnum.TITLE.getCode(), k);
                 context.put(DocModelEnum.INTERFACE_ADDRESS.getCode(), CharSequenceUtil.isEmpty(v.getPath()) ? "" : v.getPath());
                 context.put(DocModelEnum.REQUEST_PARAM.getCode(), requestParams);
@@ -523,8 +522,8 @@ public class WordServiceImpl implements WordService {
 
     private void addRequestParamList(FieldEntry fieldEntry, List<RequestParam> requestParams, String prefix) {
         RequestParam build = new RequestParam();
-        build.setDefaultValue("");
-        build.setMust("");
+        build.setDefaultValue(CharSequenceUtil.isEmpty(fieldEntry.getDefaultValue()) ? "" : fieldEntry.getDefaultValue());
+        build.setMust(CharSequenceUtil.isEmpty(fieldEntry.getMust()) ? "非必须" : fieldEntry.getMust());
         if (CharSequenceUtil.isEmpty(fieldEntry.getFieldExplain())) {
             build.setRemarks("");
         } else {

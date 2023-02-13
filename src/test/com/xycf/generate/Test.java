@@ -1,7 +1,10 @@
 package com.xycf.generate;
 
 import cn.hutool.core.util.ClassUtil;
+import com.alibaba.fastjson2.JSON;
+import com.sun.javadoc.ClassDoc;
 import com.xycf.generate.contoller.TestController;
+import com.xycf.generate.entity.FieldEntry;
 import com.xycf.generate.operator.ClassOperator;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +30,7 @@ public class Test {
 
     @org.junit.jupiter.api.Test
     public void test(){
-        classOperator.getMethodsInfo(null,"D:\\project\\generate-interface-document\\src\\main\\java\\com\\xycf\\generate\\contoller\\TestController.java");
+//        ClassDoc classDoc = classOperator.getClassDoc("D:\\project\\generate-interface-document\\src\\main\\java\\com\\xycf\\generate\\entity\\FieldEntry.java");
+//        classOperator.getMethodsInfo();
     }
 }

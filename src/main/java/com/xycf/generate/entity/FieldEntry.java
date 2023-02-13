@@ -1,6 +1,7 @@
 package com.xycf.generate.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class FieldEntry {
 
     /**
@@ -33,14 +35,14 @@ public class FieldEntry {
     private List<FieldEntry> fields;
 
     /**
-     * 是否必须
-     */
-    private String must;
-
-    /**
      * 默认值
      */
     private String defaultValue;
+
+    /**
+     * 是否必须
+     */
+    private String must;
 
     public FieldEntry(String fieldName, String fieldType, String fieldExplain) {
         this.fieldName = fieldName;
