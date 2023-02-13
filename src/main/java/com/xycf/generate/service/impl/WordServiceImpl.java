@@ -409,18 +409,22 @@ public class WordServiceImpl implements WordService {
     private String dealTemplate(String key, Map<String, InterfaceBean> interfaceBeanMap) {
         //获取Word模板，模板存放路径在项目的resources目录下
         String templatePath = redisUtils.getCacheObject(RedisConstants.TEMPLATE_DIR + key);
+        File file = null;
         if (CharSequenceUtil.isEmpty(templatePath)) {
-            throw new AppException("未查询到模板文件");
+          log.warn("未检测到模板内容。使用默认模板");
+            String property = System.getProperty("user.dir");
+            file = new File(property + "/testDocument/测试文档 - 副本.docx");
+        } else {
+            file = new File(templatePath);
         }
-        File file = new File(templatePath);
-
 
         Map<String, String> redisMap = new HashMap<>();
+        File finalFile = file;
         interfaceBeanMap.forEach((k, v) -> {
             InputStream ins = null;
             FileOutputStream out = null;
             try {
-                ins = new FileInputStream(file);
+                ins = new FileInputStream(finalFile);
                 //注册xdocreport实例并加载FreeMarker模板引擎
                 IXDocReport report = XDocReportRegistry.getRegistry().loadReport(ins,
                         TemplateEngineKind.Freemarker);
@@ -468,7 +472,7 @@ public class WordServiceImpl implements WordService {
                 //输出到本地目录
                 String dir = docConfig.getOutputDir() + File.separator + key;
                 FileUtil.mkDir(dir);
-                String outPutPath = dir + File.separator + FileUtil.createFileId() + file.getName();
+                String outPutPath = dir + File.separator + FileUtil.createFileId() + finalFile.getName();
                 out = new FileOutputStream(new File(outPutPath));
                 report.process(context, out);
 
