@@ -412,7 +412,7 @@ public class ClassOperator {
         public InitClassDoc invoke(String javaBeanFilePath) {
             classEntry = new ClassEntry();
             com.sun.tools.javadoc.Main.execute(new String[]{"-doclet", ClassOperator.class.getName(), "-docletpath",
-                    ClassOperator.class.getResource("/").getPath(), "-encoding", "utf-8", javaBeanFilePath});
+                    ClassOperator.class.getResource("/").getPath(), "-encoding", "utf-8","-XDuseUnsharedTable", javaBeanFilePath});
             ClassDoc[] classes = rootDoc.classes();
 
             if (classes == null || classes.length == 0) {

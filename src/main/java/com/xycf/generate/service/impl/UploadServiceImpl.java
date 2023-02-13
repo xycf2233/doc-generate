@@ -220,7 +220,7 @@ public class UploadServiceImpl implements UploadService {
         File[] files = entityDir.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
-                putEntityMap(entityFileMap, entityDir);
+                putEntityMap(entityFileMap, file);
             } else {
                 ClassOperator classOperator = new ClassOperator();
                 ClassDoc classDoc = classOperator.getClassDoc(file.getAbsolutePath());
