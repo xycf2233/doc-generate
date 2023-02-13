@@ -257,6 +257,8 @@ public class ClassOperator {
             //表示当前方法是否是一个 接口方法
             boolean flag = false;
 
+
+
             String requestMethod  = null;
             String requestPath = null;
 
@@ -298,9 +300,22 @@ public class ClassOperator {
             ClassEntry responseClassEntry  = getResponseInfo(key, classMethod);
             interfaceBean.setResponse(responseClassEntry);
 
+            //todo 入参示例json格式
+            String requestBody = getRequestBody(requestInfo);
+            //todo 出参示例json格式
+
             interfaceBeanMap.put(classMethodName,interfaceBean);
         }
         return interfaceBeanMap;
+    }
+
+    /**
+     * 根据入参类生成入参示例 设置字段默认值
+     * @param requestInfo
+     * @return
+     */
+    private String getRequestBody(List<ClassEntry> requestInfo) {
+        return null;
     }
 
     private ClassEntry getResponseInfo(String key, MethodDoc classMethod) {
@@ -353,6 +368,12 @@ public class ClassOperator {
                 fieldEntryList.add(fieldEntry);
                 classEntry.setFieldEntryList(fieldEntryList);
                 request.add(classEntry);
+            }
+            AnnotationDesc[] annotations = parameter.annotations();
+            for (AnnotationDesc annotation : annotations) {
+//                String s = annotation.annotationType().typeName();
+//                annotation.annotationType().
+//                System.out.println();
             }
         }
         return request;

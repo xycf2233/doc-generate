@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class TestController {
         decompressionService.decompression(compressedFilePath,targetPath,suffix);
     }
     @PostMapping("/test2")
-    public void test2(String a,String b ,Integer c){
+    public void test2(@NotNull String a,@RequestBody String b , Integer c){
 
     }
 

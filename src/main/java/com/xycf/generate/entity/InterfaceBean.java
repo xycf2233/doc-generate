@@ -33,4 +33,15 @@ public class InterfaceBean {
      * 请求路径
      */
     private String path;
+
+    /**
+     * 入参示例json格式
+     */
+    private String requestBody;
+
+    /**
+     * 出参示例json格式
+     */
+    private String responseBody;
+
 }

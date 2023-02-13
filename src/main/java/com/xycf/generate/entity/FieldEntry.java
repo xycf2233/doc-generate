@@ -32,6 +32,16 @@ public class FieldEntry {
      */
     private List<FieldEntry> fields;
 
+    /**
+     * 是否必须
+     */
+    private String must;
+
+    /**
+     * 默认值
+     */
+    private String defaultValue;
+
     public FieldEntry(String fieldName, String fieldType, String fieldExplain) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;

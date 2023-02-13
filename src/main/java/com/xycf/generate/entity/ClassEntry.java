@@ -31,4 +31,9 @@ public class ClassEntry {
      */
     private List<FieldEntry> fieldEntryList;
 
+    /**
+     * 请求格式  query/path/body/form
+     */
+    private String remarks;
+
 }
