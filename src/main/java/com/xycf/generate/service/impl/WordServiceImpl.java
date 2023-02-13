@@ -392,7 +392,11 @@ public class WordServiceImpl implements WordService {
         });
         log.info("解析出来的map：{}", JSON.toJSONString(interfaceBeanMap));
 
+        //根据模板生成word
         dealTemplate(key, interfaceBeanMap);
+
+        //合并word
+        FileUtil.mergeWord(docConfig.getOutputDir()+File.separator+key, false);
         return null;
     }
 
@@ -434,7 +438,7 @@ public class WordServiceImpl implements WordService {
                 //出参
                 ClassEntry response = v.getResponse();
                 List<FieldEntry> fieldEntryList = response.getFieldEntryList();
-                if(CollUtil.isNotEmpty(fieldEntryList)){
+                if (CollUtil.isNotEmpty(fieldEntryList)) {
                     fieldEntryList.forEach(t -> {
                         addResponseParamList(t, responseParams, "");
                     });
@@ -447,12 +451,12 @@ public class WordServiceImpl implements WordService {
                 String requestBody = "";
                 String responseBody = "";
                 context.put(DocModelEnum.TITLE.getCode(), k);
-                context.put(DocModelEnum.INTERFACE_ADDRESS.getCode(),CharSequenceUtil.isEmpty( v.getPath())?"": v.getPath());
+                context.put(DocModelEnum.INTERFACE_ADDRESS.getCode(), CharSequenceUtil.isEmpty(v.getPath()) ? "" : v.getPath());
                 context.put(DocModelEnum.REQUEST_PARAM.getCode(), requestParams);
                 context.put(DocModelEnum.RESPONSE_PARAM.getCode(), responseParams);
                 context.put(DocModelEnum.REQUEST_BODY.getCode(), requestBody);
                 context.put(DocModelEnum.RESPONSE_BODY.getCode(), responseBody);
-                context.put(DocModelEnum.METHOD.getCode(), CharSequenceUtil.isEmpty(v.getMethod())?"":v.getMethod());
+                context.put(DocModelEnum.METHOD.getCode(), CharSequenceUtil.isEmpty(v.getMethod()) ? "" : v.getMethod());
 
                 //创建字段元数据
                 FieldsMetadata fm = report.createFieldsMetadata();
@@ -464,7 +468,7 @@ public class WordServiceImpl implements WordService {
                 //输出到本地目录
                 String dir = docConfig.getOutputDir() + File.separator + key;
                 FileUtil.mkDir(dir);
-                String outPutPath = dir + File.separator + FileUtil.createFileId()+file.getName();
+                String outPutPath = dir + File.separator + FileUtil.createFileId() + file.getName();
                 out = new FileOutputStream(new File(outPutPath));
                 report.process(context, out);
 
@@ -479,7 +483,7 @@ public class WordServiceImpl implements WordService {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     try {
                         if (ins != null) {
                             ins.close();
@@ -498,9 +502,9 @@ public class WordServiceImpl implements WordService {
 
     private void addResponseParamList(FieldEntry fieldEntry, List<ResponseParam> responseParams, String prefix) {
         ResponseParam build = new ResponseParam();
-        if(CharSequenceUtil.isEmpty(fieldEntry.getFieldExplain())){
+        if (CharSequenceUtil.isEmpty(fieldEntry.getFieldExplain())) {
             build.setRemarks("");
-        }else {
+        } else {
             build.setRemarks(fieldEntry.getFieldExplain());
         }
         build.setName(fieldEntry.getFieldName());
@@ -517,9 +521,9 @@ public class WordServiceImpl implements WordService {
         RequestParam build = new RequestParam();
         build.setDefaultValue("");
         build.setMust("");
-        if(CharSequenceUtil.isEmpty(fieldEntry.getFieldExplain())){
+        if (CharSequenceUtil.isEmpty(fieldEntry.getFieldExplain())) {
             build.setRemarks("");
-        }else {
+        } else {
             build.setRemarks(fieldEntry.getFieldExplain());
         }
         build.setName(fieldEntry.getFieldName());

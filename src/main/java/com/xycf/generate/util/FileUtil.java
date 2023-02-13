@@ -1,7 +1,12 @@
 package com.xycf.generate.util;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.spire.doc.Document;
+import com.spire.doc.DocumentObject;
+import com.spire.doc.FileFormat;
+import com.spire.doc.Section;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +111,7 @@ public class FileUtil {
 
     /**
      * 删除文件夹及其下的所有子文件夹和文件
+     *
      * @param folderPath
      */
     public static void deleteFolder(String folderPath) {
@@ -121,6 +127,12 @@ public class FileUtil {
     }
 
 
+    /**
+     * 删除文件夹下所有文件
+     *
+     * @param path
+     * @return
+     */
     public static boolean deleteAllFileInFolder(String path) {
         boolean flag = false;
         File file = new File(path);
@@ -298,7 +310,7 @@ public class FileUtil {
      *
      * @param zipFilePath zip文件的全路径
      * @param targetPath  解压后的文件保存的路径
-     * @param isInSameDir  是否将压缩包内的所有文件解压到同一个文件夹下
+     * @param isInSameDir 是否将压缩包内的所有文件解压到同一个文件夹下
      * @return
      */
     public static String unzip(String zipFilePath, String targetPath, boolean isInSameDir) {
@@ -335,10 +347,10 @@ public class FileUtil {
                             //msg.setLength(0);
                             msg.append("存在重复的文件名：" + zipFileName);
                         }
-                        if(!zipFileName.contains(".java")){
+                        if (!zipFileName.contains(".java")) {
                             continue;
                         }
-                        String unzipDir = zipFileName.substring(0,zipFileName.lastIndexOf("/"));
+                        String unzipDir = zipFileName.substring(0, zipFileName.lastIndexOf("/"));
                         mkDir(targetPath + File.separator + unzipDir);
                         // 文件
                         File targetFile = new File(targetPath + File.separator + zipFileName);
@@ -493,9 +505,10 @@ public class FileUtil {
 
     /**
      * 解压缩rar包
+     *
      * @param rarFilePath rar文件的全路径
      * @param targetPath  解压后的文件保存的路径
-     * @param isInSameDir  是否将压缩包内的所有文件解压到同一个文件夹下
+     * @param isInSameDir 是否将压缩包内的所有文件解压到同一个文件夹下
      * @return
      */
     public static String unrar(String rarFilePath, String targetPath, boolean isInSameDir) {
@@ -511,7 +524,7 @@ public class FileUtil {
                 directoryFile.mkdir();
             }
             //解压
-            ShellUtil.excuete(rarFilePath,targetPath);
+            ShellUtil.excuete(rarFilePath, targetPath);
             // 把解压后所有子目录的文件都移入目标目录
             if (isInSameDir) {
                 String ret = moveToRootDir(targetPath);
@@ -712,10 +725,10 @@ public class FileUtil {
                     msg.setLength(0);
                     msg.append("存在重复的文件名：" + sevenZFileName);
                 }
-                if(!sevenZFileName.contains(".java")){
+                if (!sevenZFileName.contains(".java")) {
                     continue;
                 }
-                String unzipDir = sevenZFileName.substring(0,sevenZFileName.lastIndexOf("/"));
+                String unzipDir = sevenZFileName.substring(0, sevenZFileName.lastIndexOf("/"));
                 mkDir(targetPath + File.separator + unzipDir);
                 FileOutputStream out = new FileOutputStream(targetPath
                         + File.separator + sevenZFileName);
@@ -788,7 +801,7 @@ public class FileUtil {
                 msg = FileUtil.unSevenZ(compressedFilePath, targetPath, false);
             }
         }
-        log.info("{}解压成功",targetPath);
+        log.info("{}解压成功", targetPath);
         return msg;
     }
 
@@ -913,7 +926,7 @@ public class FileUtil {
         File file = new File(oldPath);
         //文件名称列表
         String[] filePath = file.list();
-        if(filePath==null || filePath.length==0){
+        if (filePath == null || filePath.length == 0) {
 
         }
 
@@ -1048,16 +1061,69 @@ public class FileUtil {
 
     /**
      * 生成文件夹
+     *
      * @param dir 文件夹路径
      */
     public static void mkDir(String dir) {
         File file = new File(dir);
-        if(!file.exists()){
+        if (!file.exists()) {
             try {
                 file.mkdirs();
             } catch (Exception e) {
-                throw new AppException("路径:[ "+dir+" 不是一个文件夹]");
+                throw new AppException("路径:[ " + dir + " 不是一个文件夹]");
             }
         }
+    }
+
+    private static final List<String> WORD_SUFFIX = Arrays.asList(".doc", ".docx");
+
+    /**
+     * 合并word文档
+     *
+     * @param dirPath 合并的文件夹路径 合并该文件夹下所有word文件
+     * @param flag    是否分页  true：每个接口一页  false：不分页
+     */
+    public static void mergeWord(String dirPath, boolean flag) {
+        File file = new File(dirPath);
+        if (!file.exists() || !file.isDirectory()) {
+            throw new AppException("不是一个文件夹或者该文件夹不存在！");
+        }
+        String targetFile = dirPath + File.separator + createFileId() + ".docx";
+        Document doc = null;
+        File[] files = file.listFiles();
+        for (File word : files) {
+            boolean isWord = false;
+            for (String wordSuffix : WORD_SUFFIX) {
+                if (word.getName().endsWith(wordSuffix)) {
+                    isWord = !isWord;
+                }
+            }
+            if (!isWord) {
+                log.warn("文件：{}  不是一个word文件", word.getAbsolutePath());
+                continue;
+            }
+            if (ObjectUtil.isEmpty(doc)) {
+                doc = new Document(word.getAbsolutePath());
+            } else {
+                assert doc!=null;
+                if (flag) {
+                    //保存合并后的文档
+                    doc.insertTextFromFile(word.getAbsolutePath(),FileFormat.Docx_2010);
+                } else {
+                    Document doc2 = new Document(word.getAbsolutePath());
+                    //遍历文档2的所有段落内容，添加到文档1
+                    Section lastsec = doc.getLastSection();
+                    for (Section section : (Iterable<Section>) doc2.getSections()) {
+                        for (DocumentObject obj : (Iterable<DocumentObject>) section.getBody().getChildObjects()) {
+                            lastsec.getBody().getChildObjects().add(obj.deepClone());
+                        }
+                    }
+                }
+            }
+        }
+        FileUtil.deleteAllFileInFolder(file.getAbsolutePath());
+        //保存合并后的文档
+        doc.saveToFile(targetFile, FileFormat.Docx_2010);
+        log.info("合并接口文档成功。。");
     }
 }
