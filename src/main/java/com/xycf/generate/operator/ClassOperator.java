@@ -275,6 +275,8 @@ public class ClassOperator {
 
         Map<String, InterfaceBean> interfaceBeanMap = new HashMap<>();
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
+        String classRequestPath = getRequestMappingValue(classDoc);
+
         MethodDoc[] classMethods = getClassMethods(classDoc);
         for (MethodDoc classMethod : classMethods) {
             //接口名称
@@ -284,9 +286,8 @@ public class ClassOperator {
             //表示当前方法是否是一个 接口方法
             boolean flag = false;
 
-
             String requestMethod = null;
-            String requestPath = null;
+            StringBuilder requestPath = new StringBuilder();
 
             //注解 数组
             AnnotationDesc[] annotations = classMethod.annotations();
@@ -308,8 +309,9 @@ public class ClassOperator {
 
                         boolean isRequestPath = RequestPathEnum.isRequestPath(annotationValueName);
                         if (isRequestPath) {
-                            requestPath = StrUtil.str(annotationValue, Charset.defaultCharset());
-                            interfaceBean.setPath(requestPath);
+                            requestPath.append(classRequestPath.replace("\"",""))
+                                    .append(StrUtil.str(annotationValue, Charset.defaultCharset()).replace("\"",""));
+                            interfaceBean.setPath(requestPath.toString());
                         }
                     }
                 }
@@ -333,6 +335,22 @@ public class ClassOperator {
             interfaceBeanMap.put(classMethodName, interfaceBean);
         }
         return interfaceBeanMap;
+    }
+
+    private String getRequestMappingValue(ClassDoc classDoc) {
+        AnnotationDesc[] classAnnotation = classDoc.annotations();
+        for (AnnotationDesc annotationDesc : classAnnotation) {
+            if("RequestMapping".equals(annotationDesc.annotationType().typeName())){
+                AnnotationDesc.ElementValuePair[] elementValuePairs = annotationDesc.elementValues();
+                for (AnnotationDesc.ElementValuePair elementValuePair : elementValuePairs) {
+                    String name = elementValuePair.element().name();
+                    if("value".equals(name)){
+                        return elementValuePair.value().toString();
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     /**

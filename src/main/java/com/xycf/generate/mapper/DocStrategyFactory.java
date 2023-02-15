@@ -36,8 +36,16 @@ public class DocStrategyFactory implements ApplicationContextAware {
     public void generateDocumentForTemplate(String className,String key, List<String> controllerDirs, List<String> entityDirs) {
         DocService docService = map.get(className);
         if (docService != null) {
-            loggerFactory.info("文档处理策略工厂类调用-----");
-            docService.generateDocumentForTemplate(key,controllerDirs,entityDirs);
+            loggerFactory.info("文档处理策略工厂类调用-----根据用户自定义模板生成文件");
+            docService.generateDocumentForTemplate(key,controllerDirs,entityDirs,false);
+        }
+    }
+
+    public void generateDocumentDefault(String className,String key, List<String> controllerDirs, List<String> entityDirs) {
+        DocService docService = map.get(className);
+        if (docService != null) {
+            loggerFactory.info("文档处理策略工厂类调用-----根据固定模板生成文件");
+            docService.generateDocumentForTemplate(key,controllerDirs,entityDirs,true);
         }
     }
 }
