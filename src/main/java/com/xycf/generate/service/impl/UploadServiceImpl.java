@@ -2,12 +2,16 @@ package com.xycf.generate.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.ObjectId;
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.StrUtil;
 import com.sun.javadoc.ClassDoc;
 import com.xycf.generate.common.dto.ScanUnZipDirDTO;
 import com.xycf.generate.common.enums.DecompressionEnum;
+import com.xycf.generate.common.enums.NotParseDir;
 import com.xycf.generate.common.enums.RedisConstants;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
+import com.xycf.generate.entity.doc.ZipFile;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.base.DecompressionService;
@@ -19,9 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author ztc
@@ -205,6 +207,44 @@ public class UploadServiceImpl implements UploadService {
         }
         //模板地址存入缓存
         redisUtils.setCacheObject(RedisConstants.TEMPLATE_DIR+key,dir+File.separator+name);
+    }
+
+    @Override
+    public List<ZipFile> uploadZipList(String key) {
+        List<ZipFile> res = new ArrayList<>();
+        //获取存储的路径 RedisConstants.UPLOAD_UNZIP + res
+        String redisKey = RedisConstants.UPLOAD_UNZIP + key;
+        String path = redisUtils.getCacheObject(redisKey);
+        if(CharSequenceUtil.isEmpty(path)){
+            throw new AppException("未读取到保存的文件夹");
+        }
+        File srcFile = new File(path);
+        if(!srcFile.isDirectory()){
+            throw new AppException("未读取到保存的文件夹");
+        }
+        getFileList(Objects.requireNonNull(srcFile.listFiles()),res);
+        return res;
+    }
+
+    private void getFileList(File[] files,List<ZipFile> res){
+        for (File file : files) {
+            if(file.isDirectory() && !NotParseDir.contains(file.getName())){
+                ZipFile zipFile = new ZipFile();
+                zipFile.setFileName(file.getName());
+                zipFile.setDir(true);
+                getFileList(file.listFiles(),zipFile.getZipFiles());
+                if(CollUtil.isNotEmpty(zipFile.getZipFiles())){
+                    res.add(zipFile);
+                }
+            }else{
+                if(file.getName().endsWith(".java")){
+                    ZipFile zipFile = new ZipFile();
+                    zipFile.setFileName(file.getName());
+                    zipFile.setDir(false);
+                    res.add(zipFile);
+                }
+            }
+        }
     }
 
     /**
