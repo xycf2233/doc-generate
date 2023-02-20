@@ -1,6 +1,7 @@
 package com.xycf.generate.service;
 
 import com.xycf.generate.common.dto.ScanUnZipDirDTO;
+import com.xycf.generate.entity.doc.ZipFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -29,5 +30,18 @@ public interface UploadService {
      */
     void scanUnZipDir(File file, List<String> controllerDirs, List<String> entityDirs, Map<String, String> controllerFileMap,Map<String, String> entityFileMap);
 
+    /**
+     * 上传模板文件
+     * @param file  模板文件
+     * @param key   唯一序列
+     * @return
+     */
     void uploadTemplate(MultipartFile file, String key);
+
+    /**
+     * 获取压缩文件内容返回
+     * @param key
+     * @return
+     */
+    List<ZipFile> uploadZipList(String key);
 }
