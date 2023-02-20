@@ -2,7 +2,6 @@ package com.xycf.generate.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
-import com.alibaba.fastjson2.JSON;
 import com.xycf.generate.entity.excel.ExcelEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,8 @@ import java.util.List;
 @Slf4j
 @Getter
 @Component
-@Order(2)
-public class ExcelDataListener implements ReadListener<ExcelEntity> {
+@Order(3)
+public class ExcelDataListener2 implements ReadListener<ExcelEntity> {
 
     private List<ExcelEntity> list = new ArrayList<>();
 
@@ -42,12 +41,10 @@ public class ExcelDataListener implements ReadListener<ExcelEntity> {
      * @param analysisContext
      */
     @Override
-    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        log.info("读取excel文件已完成。。。。。。。。");
+    public void doAfterAllAnalysed(AnalysisContext analysisContext){
     }
 
     public void doClearList() {
         list.clear();
-        log.info("清除list数据成功");
     }
 }
