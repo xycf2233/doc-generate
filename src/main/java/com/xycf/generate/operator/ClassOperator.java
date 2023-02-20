@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -278,29 +277,6 @@ public class ClassOperator {
 
         Map<String, InterfaceBean> interfaceBeanMap = new HashMap<>();
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
-
-        StringBuilder classRequestPath = new StringBuilder();
-        AnnotationDesc[] classAnnotations = classDoc.annotations();
-        for (AnnotationDesc classAnnotation : classAnnotations) {
-            String annotationName = classAnnotation.annotationType().typeName();
-            if(annotationName.equals("RequestMapping")){
-                AnnotationDesc.ElementValuePair[] elementValuePairs = classAnnotation.elementValues();
-                for (AnnotationDesc.ElementValuePair elementValuePair : elementValuePairs) {
-                    AnnotationValue value = elementValuePair.value();
-                    //注解值 "word\u8f6c\u6362xml"
-                    String annotationValue = value.toString();
-                    AnnotationTypeElementDoc element = elementValuePair.element();
-                    //注解属性 value
-                    String annotationValueName = element.name();
-                    if(annotationValueName.equals("value")){
-                        classRequestPath.append(annotationValue);
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
         MethodDoc[] classMethods = getClassMethods(classDoc);
         for (MethodDoc classMethod : classMethods) {
             //接口名称
@@ -535,26 +511,5 @@ public class ClassOperator {
             myResult = false;
             return this;
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        String path = "C:\\Users\\张天成\\Desktop\\aaa.txt";
-        String target = "C:\\Users\\张天成\\Desktop\\ccccc.txt";
-        File file = new File(path);
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        BufferedWriter bw = new BufferedWriter(new FileWriter(target));
-        String s = br.readLine();
-        while (s!=null){
-            String replace = s.replace(",", "\t");
-            bw.write(replace);
-            bw.write("\n");
-            s = br.readLine();
-        }
-        bw.flush();
-        System.out.println("完成");
-        bw.close();
-        br.close();
-
     }
 }

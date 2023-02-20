@@ -117,167 +117,6 @@ public class WordServiceImpl implements WordService {
 //        }
 //        System.out.println();
     }
-
-    public void test(String key, Map<String, InterfaceBean> map) {
-        Document document = new Document();
-        map.forEach((interfaceName, v) -> {
-            //接口名
-            String title = interfaceName;
-            //入参
-            List<ClassEntry> request = v.getRequest();
-            //出参
-            ClassEntry response = v.getResponse();
-            //请求方式
-            String method = v.getMethod();
-            //请求地址
-            String requestPath = v.getPath();
-
-            Section section = document.addSection();
-
-            //接口名
-            Paragraph titleParagraph = section.addParagraph();
-            TextRange textRange = titleParagraph.appendText(title);
-            textRange.getCharacterFormat().setFontSize(20f);
-            textRange.getCharacterFormat().setBold(true);
-
-            //访问地址
-            Paragraph requestPathParagraph = section.addParagraph();
-            requestPathParagraph.appendText(requestPath);
-
-            //请求方式
-            Paragraph requestMethodParagraph = section.addParagraph();
-            requestMethodParagraph.appendText(method);
-
-            //输入参数
-            Paragraph requestParamParagraph = section.addParagraph();
-            requestParamParagraph.appendText("输入参数：");
-
-            //插入表格
-            Table table = section.addTable();
-            int rowNum = calculateRequestNum(request);
-            log.info("表格需要添加{}行", rowNum);
-
-            for (int row = 0; row < rowNum; row++) {
-                ClassEntry classEntry = request.get(row);
-                List<FieldEntry> fieldEntryList = classEntry.getFieldEntryList();
-                FieldEntry fieldEntry = fieldEntryList.get(row);
-                TableRow tableRow = table.addRow();
-                //${in-paramName}	${in-type}	${in-isMust}	${in-description}	${in-remarks}
-                log.info("表格当前行数为：{}", row + 1);
-                for (int j = 0; j < 5; j++) {
-                    TableCell tableCell = tableRow.addCell();
-                    Paragraph inParamName = tableCell.addParagraph();
-                    switch (j) {
-                        case 0:
-                            inParamName.appendText(fieldEntry.getFieldName());
-                            break;
-                        case 1:
-                            inParamName.appendText(fieldEntry.getFieldType());
-                            break;
-                        case 2:
-                            inParamName.appendText("是否必须");
-                            break;
-                        case 3:
-                            inParamName.appendText(fieldEntry.getFieldExplain());
-                            break;
-                        case 4:
-                            inParamName.appendText("备注");
-                            break;
-                    }
-                }
-                row = subFieldAddRow(table, row, fieldEntry);
-            }
-
-            document.saveToFile("template" + File.separator + key + File.separator + "test" + FileUtil.createFileId() + ".docx", FileFormat.Doc);
-        });
-        System.out.println();
-    }
-
-    private int subFieldAddRow(Table table, int row, FieldEntry fieldEntry) {
-        while (CollUtil.isNotEmpty(fieldEntry.getFields())) {
-            List<FieldEntry> fields = fieldEntry.getFields();
-            for (FieldEntry field : fields) {
-                TableRow tableRow2 = table.addRow();
-                row++;
-                log.info("表格当前行数为：{}", row + 1);
-                for (int j = 0; j < 5; j++) {
-                    TableCell tableCell = tableRow2.addCell();
-                    Paragraph inParamName = tableCell.addParagraph();
-                    switch (j) {
-                        case 0:
-                            inParamName.appendText(field.getFieldName());
-                            break;
-                        case 1:
-                            inParamName.appendText(field.getFieldType());
-                            break;
-                        case 2:
-                            inParamName.appendText("是否必须");
-                            break;
-                        case 3:
-                            inParamName.appendText(field.getFieldExplain());
-                            break;
-                        case 4:
-                            inParamName.appendText("备注");
-                            break;
-                    }
-                }
-                row = subFieldAddRow(table, row, field);
-            }
-        }
-        return row;
-    }
-
-    /**
-     * 计算请求入参的行数
-     *
-     * @param request
-     * @return
-     */
-    private int calculateRequestNum(List<ClassEntry> request) {
-        AtomicInteger num = new AtomicInteger(0);
-        for (ClassEntry classEntry : request) {
-            calculateFieldEntryNum(classEntry.getFieldEntryList(), num);
-        }
-        return num.get();
-    }
-
-    private void calculateFieldEntryNum(List<FieldEntry> fieldEntries, AtomicInteger num) {
-        if (CollUtil.isNotEmpty(fieldEntries)) {
-            num.addAndGet(fieldEntries.size());
-        }
-        for (FieldEntry fieldEntry : fieldEntries) {
-            if (CollUtil.isNotEmpty(fieldEntry.getFields())) {
-                calculateFieldEntryNum(fieldEntry.getFields(), num);
-            }
-        }
-    }
-
-    /**
-     * 填充单元格
-     *
-     * @param table
-     * @param i
-     * @param j
-     * @param fieldEntry
-     * @param prefix
-     */
-    private static void setField(Table table, int j, FieldEntry fieldEntry, String prefix, AtomicInteger rows) {
-        TableRow tableRow = table.addRow();
-        rows.addAndGet(1);
-        CellCollection cells = tableRow.getCells();
-        TableCell tableCell = cells.get(j);
-        Paragraph para = tableCell.getParagraphs().get(0);
-        para.setText(prefix + fieldEntry.getFieldName());
-        if (CollUtil.isNotEmpty(fieldEntry.getFields())) {
-            List<FieldEntry> fields = fieldEntry.getFields();
-            for (FieldEntry field : fields) {
-                if (!CollUtil.isNotEmpty(field.getFields())) {
-                    setField(table, j, field, prefix + "-", rows);
-                }
-            }
-        }
-    }
-
     @Override
     public void uploadTemplate(MultipartFile multipartFile) {
 
@@ -289,54 +128,6 @@ public class WordServiceImpl implements WordService {
     }
 
     /**
-     * 生成word文档
-     * 1.解析解压后的文件 找出实体层文件和控制层文件
-     * 2.解析控制层文件 得到 控制层中所有接口的信息 （入参、出参、请求方式、接口路径）
-     *
-     * @param key            每次操作的唯一标识   保证上传操作和生成文档操作的一致性，前端传
-     * @param controllerDirs 用户声明的控制层文件夹 可为null
-     * @param entityDirs     用户声明的实体层文件夹 不可为null
-     * @return
-     */
-    @Override
-    public String generateDocument(String key, List<String> controllerDirs, List<String> entityDirs) {
-        if (CollUtil.isEmpty(entityDirs)) {
-            throw new AppException("声明的实体层文件夹不可为空！");
-        }
-        String redisKey = RedisConstants.UPLOAD_UNZIP + key;
-        //获取解压的文件夹路径 redisUtils.setCacheObject(RedisConstants.UPLOAD_UNZIP+res,unZipDir);
-        String unzipDir = redisUtils.getCacheObject(redisKey);
-
-        //控制层文件map  k：类名  v：文件路径
-        Map<String, String> controllerFileMap = new HashMap<>();
-        //实体层文件map k：类名 v：文件路径
-        Map<String, String> entityFileMap = new HashMap<>();
-
-        uploadService.scanUnZipDir(new File(unzipDir), controllerDirs, entityDirs, controllerFileMap, entityFileMap);
-
-        //获取解压后的控制层、实体层文件 -> 存入缓存
-        redisUtils.setCacheMap(RedisConstants.CONTROLLER_DIR + key, controllerFileMap);
-        redisUtils.setCacheMap(RedisConstants.ENTITY_DIR + key, entityFileMap);
-
-        //解析控制层文件
-        Map<String, InterfaceBean> interfaceBeanMap = new HashMap<>();
-        controllerFileMap.entrySet().stream().forEach(t -> {
-            //类名
-            String className = t.getKey();
-            //路径
-            String value = t.getValue();
-            //获取类中接口信息
-            interfaceBeanMap.putAll(classOperator.getMethodsInfo(key, value));
-            ;
-        });
-        // TODO: 2023/2/4 处理xml文件
-        System.out.println(JSON.toJSONString(interfaceBeanMap));
-
-        test(key, interfaceBeanMap);
-        return null;
-    }
-
-    /**
      * 根据用户上传的模板生成word文档
      * 1.解析解压后的文件 找出实体层文件和控制层文件
      * 2.解析控制层文件 得到 控制层中所有接口的信息 （入参、出参、请求方式、接口路径）
@@ -344,10 +135,11 @@ public class WordServiceImpl implements WordService {
      * @param key            每次操作的唯一标识   保证上传操作和生成文档操作的一致性，前端传
      * @param controllerDirs 用户声明的控制层文件夹 可为null
      * @param entityDirs     用户声明的实体层文件夹 不可为null
+     * @param flag     是否根据默认模板生成文件
      * @return
      */
     @Override
-    public String generateDocumentForTemplate(String key, List<String> controllerDirs, List<String> entityDirs) {
+    public String generateDocumentForTemplate(String key, List<String> controllerDirs, List<String> entityDirs,boolean flag) {
         if (CollUtil.isEmpty(entityDirs)) {
             throw new AppException("声明的实体层文件夹不可为空！");
         }
@@ -379,7 +171,7 @@ public class WordServiceImpl implements WordService {
         log.info("解析出来的map：{}", JSON.toJSONString(interfaceBeanMap));
 
         //根据模板生成word
-        dealTemplate(key, interfaceBeanMap);
+        dealTemplate(key, interfaceBeanMap,flag);
 
         //合并word
         FileUtil.mergeWord(docConfig.getOutputDir() + File.separator + key, false);
@@ -389,18 +181,20 @@ public class WordServiceImpl implements WordService {
     /**
      * 解析用户上传的模板 根据模板生成word文档
      *
-     * @param key
-     * @param interfaceBeanMap
+     * @param key 唯一标识
+     * @param interfaceBeanMap 接口map
+     * @param flag 是否根据默认模板生成文件
      */
-    private String dealTemplate(String key, Map<String, InterfaceBean> interfaceBeanMap) {
+    private String dealTemplate(String key, Map<String, InterfaceBean> interfaceBeanMap,boolean flag) {
         //获取Word模板，模板存放路径在项目的resources目录下
         String templatePath = redisUtils.getCacheObject(RedisConstants.TEMPLATE_DIR + key);
         File file = null;
-        if (CharSequenceUtil.isEmpty(templatePath)) {
-            log.warn("未检测到模板内容。使用默认模板");
+        if (flag) {
+            log.info("使用默认模板");
             String property = System.getProperty("user.dir");
             file = new File(property + "/testDocument/测试文档 - 副本.docx");
         } else {
+            log.info("使用用户自定义模板");
             file = new File(templatePath);
         }
 

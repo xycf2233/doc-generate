@@ -5,13 +5,13 @@ import com.xycf.generate.service.base.DecompressionService;
 import com.xycf.generate.service.base.DocService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @Author ztc
@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 @Api(value = "测试")
+@RequestMapping("/test")
 public class TestController {
     @Resource(name = "wordServiceImpl")
     private DocService wordService;
@@ -42,11 +43,11 @@ public class TestController {
 
     @PostMapping("/generateDocument")
     public void generateDocument(@Valid @RequestBody GenerateDocumentReq req){
-        String s = wordService.generateDocument(req.getKey(), req.getControllerDirs(), req.getEntityDirs());
+        String s = wordService.generateDocumentForTemplate(req.getKey(), req.getControllerDirs(), req.getEntityDirs(),true);
     }
 
     @PostMapping("/generateDocumentForTemplate")
     public void generateDocumentForTemplate(@Valid @RequestBody GenerateDocumentReq req){
-        String s = wordService.generateDocumentForTemplate(req.getKey(), req.getControllerDirs(), req.getEntityDirs());
+        String s = wordService.generateDocumentForTemplate(req.getKey(), req.getControllerDirs(), req.getEntityDirs(),false);
     }
 }

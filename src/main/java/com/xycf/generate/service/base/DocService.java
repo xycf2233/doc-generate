@@ -31,22 +31,17 @@ public interface DocService {
     void generateDocument(String key, HttpServletResponse response);
 
     /**
-     * 生成word文档
+     * 根据用户上传的模板生成word文档
+     * 1.解析解压后的文件 找出实体层文件和控制层文件
+     * 2.解析控制层文件 得到 控制层中所有接口的信息 （入参、出参、请求方式、接口路径）
+     *
      * @param key            每次操作的唯一标识   保证上传操作和生成文档操作的一致性，前端传
      * @param controllerDirs 用户声明的控制层文件夹 可为null
      * @param entityDirs     用户声明的实体层文件夹 不可为null
+     * @param flag     是否根据默认模板生成文件
      * @return
      */
-    String generateDocument(String key, List<String> controllerDirs, List<String> entityDirs);
-
-    /**
-     * 生成word文档
-     * @param key            每次操作的唯一标识   保证上传操作和生成文档操作的一致性，前端传
-     * @param controllerDirs 用户声明的控制层文件夹 可为null
-     * @param entityDirs     用户声明的实体层文件夹 不可为null
-     * @return
-     */
-    String generateDocumentForTemplate(String key, List<String> controllerDirs, List<String> entityDirs);
+    String generateDocumentForTemplate(String key, List<String> controllerDirs, List<String> entityDirs,boolean flag);
 
 
 
