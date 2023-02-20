@@ -7,17 +7,16 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.sun.javadoc.*;
 import com.xycf.generate.common.enums.*;
-import com.xycf.generate.config.exception.AppException;
-import com.xycf.generate.entity.ClassEntry;
-import com.xycf.generate.entity.ControllerOperatorBean;
-import com.xycf.generate.entity.FieldEntry;
-import com.xycf.generate.entity.InterfaceBean;
+import com.xycf.generate.entity.doc.ClassEntry;
+import com.xycf.generate.entity.doc.FieldEntry;
+import com.xycf.generate.entity.doc.InterfaceBean;
 import com.xycf.generate.util.RedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,12 +103,16 @@ public class ClassOperator {
                 String annotationName = annotation.annotationType().typeName();
                 isMust = IsMustEnum.isMust(annotationName);
             }
+            String type = field.type().typeName();
+            if( field.type().toString().contains(".")){
+                type = field.type().toString().substring(field.type().toString().lastIndexOf(".")+1);
+            }
             FieldEntry build = FieldEntry.builder()
                     .fieldName(field.name())
-                    .fieldType(field.type().typeName())
+                    .fieldType(type)
                     .fieldExplain(field.commentText())
                     .must(isMust ? "必须" : "非必须")
-                    .defaultValue(DefaultEnum.getDefaultValue(field.type().toString()))
+                    .defaultValue(DefaultEnum.getDefaultValue(type))
                     .build();
             entrys.add(build);
         }
@@ -275,6 +278,29 @@ public class ClassOperator {
 
         Map<String, InterfaceBean> interfaceBeanMap = new HashMap<>();
         ClassDoc classDoc = getClassDoc(javaBeanFilePath);
+
+        StringBuilder classRequestPath = new StringBuilder();
+        AnnotationDesc[] classAnnotations = classDoc.annotations();
+        for (AnnotationDesc classAnnotation : classAnnotations) {
+            String annotationName = classAnnotation.annotationType().typeName();
+            if(annotationName.equals("RequestMapping")){
+                AnnotationDesc.ElementValuePair[] elementValuePairs = classAnnotation.elementValues();
+                for (AnnotationDesc.ElementValuePair elementValuePair : elementValuePairs) {
+                    AnnotationValue value = elementValuePair.value();
+                    //注解值 "word\u8f6c\u6362xml"
+                    String annotationValue = value.toString();
+                    AnnotationTypeElementDoc element = elementValuePair.element();
+                    //注解属性 value
+                    String annotationValueName = element.name();
+                    if(annotationValueName.equals("value")){
+                        classRequestPath.append(annotationValue);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
         MethodDoc[] classMethods = getClassMethods(classDoc);
         for (MethodDoc classMethod : classMethods) {
             //接口名称
@@ -450,9 +476,6 @@ public class ClassOperator {
                 classEntry.setModelClassName(parameterType);
                 fieldEntry.setFieldType(parameterType);
                 fieldEntry.setFieldName(name);
-                //todo 获取该入参参数默认值
-                fieldEntry.setDefaultValue("");
-
                 fieldEntryList.add(fieldEntry);
 
                 classEntry.setFieldEntryList(fieldEntryList);
@@ -472,28 +495,6 @@ public class ClassOperator {
         }
         return isMust;
     }
-
-
-    /**
-     * 判断方法是否是mvc方法 todo
-     *
-     * @return 是否是mvc方法
-     */
-    public boolean isMvcMethod() {
-
-        return false;
-    }
-
-    /**
-     * 获取接口请求路径  todo
-     *
-     * @return 接口路径
-     */
-    public String getRequestPath() {
-
-        return null;
-    }
-
 
     private class InitClassDoc {
         private boolean myResult;
@@ -534,5 +535,26 @@ public class ClassOperator {
             myResult = false;
             return this;
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        String path = "C:\\Users\\张天成\\Desktop\\aaa.txt";
+        String target = "C:\\Users\\张天成\\Desktop\\ccccc.txt";
+        File file = new File(path);
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        BufferedWriter bw = new BufferedWriter(new FileWriter(target));
+        String s = br.readLine();
+        while (s!=null){
+            String replace = s.replace(",", "\t");
+            bw.write(replace);
+            bw.write("\n");
+            s = br.readLine();
+        }
+        bw.flush();
+        System.out.println("完成");
+        bw.close();
+        br.close();
+
     }
 }

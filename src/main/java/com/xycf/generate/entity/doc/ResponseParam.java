@@ -1,4 +1,4 @@
-package com.xycf.generate.entity;
+package com.xycf.generate.entity.doc;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

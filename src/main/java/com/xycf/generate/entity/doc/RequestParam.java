@@ -1,4 +1,4 @@
-package com.xycf.generate.entity;
+package com.xycf.generate.entity.doc;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +20,6 @@ public class RequestParam {
     private String type;
 
     private String must;
-
-    private String defaultValue;
 
     private String remarks;
 }

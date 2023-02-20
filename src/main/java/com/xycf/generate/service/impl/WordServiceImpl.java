@@ -5,30 +5,19 @@ import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import com.spire.doc.*;
 import com.spire.doc.collections.CellCollection;
-import com.spire.doc.collections.RowCollection;
-import com.spire.doc.collections.SectionCollection;
-import com.spire.doc.collections.TableCollection;
 import com.spire.doc.documents.Paragraph;
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-import com.spire.doc.*;
-import com.spire.doc.collections.*;
-import com.spire.doc.documents.Paragraph;
 import com.spire.doc.fields.TextRange;
 import com.xycf.generate.common.enums.RedisConstants;
 import com.xycf.generate.common.enums.base.DocModelEnum;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
-import com.xycf.generate.entity.ClassEntry;
-import com.xycf.generate.entity.FieldEntry;
-import com.xycf.generate.entity.InterfaceBean;
-import com.xycf.generate.entity.*;
+import com.xycf.generate.entity.doc.*;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.WordService;
 import com.xycf.generate.util.FileUtil;
 import com.xycf.generate.util.RedisUtils;
-import io.swagger.models.auth.In;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -36,8 +25,6 @@ import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 import lombok.extern.slf4j.Slf4j;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,7 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
 
 /**
  * @Author ztc
@@ -522,7 +508,7 @@ public class WordServiceImpl implements WordService {
 
     private void addRequestParamList(FieldEntry fieldEntry, List<RequestParam> requestParams, String prefix) {
         RequestParam build = new RequestParam();
-        build.setDefaultValue(CharSequenceUtil.isEmpty(fieldEntry.getDefaultValue()) ? "" : fieldEntry.getDefaultValue());
+//        build.setDefaultValue(CharSequenceUtil.isEmpty(fieldEntry.getDefaultValue()) ? "" : fieldEntry.getDefaultValue());
         build.setMust(CharSequenceUtil.isEmpty(fieldEntry.getMust()) ? "非必须" : fieldEntry.getMust());
         if (CharSequenceUtil.isEmpty(fieldEntry.getFieldExplain())) {
             build.setRemarks("");

@@ -1,4 +1,4 @@
-package com.xycf.generate.entity;
+package com.xycf.generate.entity.doc;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +35,7 @@ public class FieldEntry {
     private List<FieldEntry> fields;
 
     /**
-     * 默认值
+     * 序列化json的默认值
      */
     private String defaultValue;
 

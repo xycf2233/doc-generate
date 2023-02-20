@@ -83,13 +83,6 @@
             <version>5.8.11</version>
         </dependency>
 
-        <!--rar压缩-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.9</version>
-        </dependency>
-
         <!-- 解压rar所需的依赖 -->
         <dependency>
             <groupId>com.github.junrar</groupId>
@@ -177,6 +170,12 @@
             <version>2.0.2</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.1.1</version>
+        </dependency>
 
     </dependencies>
 
