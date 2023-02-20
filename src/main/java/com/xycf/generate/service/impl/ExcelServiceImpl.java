@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -51,6 +53,16 @@ public class ExcelServiceImpl extends BaseExcelService implements ExcelService {
 		excelDataListener.doClearList();
 		excelDataListener2.doClearList();
 		return buildSuccessListResponse(resultOne, resultTwo);
+	}
+
+	@Override
+	public void operationExcel(ExcelEntity excel) {
+
+	}
+
+	@Override
+	public void download(HttpServletResponse response, HttpServletRequest request) {
+
 	}
 
 	private static ExcelListResponse buildSuccessListResponse(List<ExcelEntity> excel, List<ExcelEntity> excel2) {

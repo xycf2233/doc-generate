@@ -1,8 +1,11 @@
 package com.xycf.generate.service;
 
+import com.xycf.generate.entity.excel.ExcelEntity;
 import com.xycf.generate.entity.excel.ExcelListResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -18,4 +21,8 @@ public interface ExcelService {
 	 * @return
 	 */
 	ExcelListResponse getExcelListResponse(MultipartFile file) throws IOException;
+
+	void operationExcel(ExcelEntity excel);
+
+	void download(HttpServletResponse response, HttpServletRequest request);
 }

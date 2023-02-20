@@ -1,16 +1,16 @@
 package com.xycf.generate.contoller;
 
 import com.xycf.generate.common.base.BaseResponse;
+import com.xycf.generate.entity.excel.ExcelEntity;
 import com.xycf.generate.entity.excel.ExcelListResponse;
 import com.xycf.generate.service.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -32,5 +32,15 @@ public class ExcelController {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public BaseResponse<Void> operationExcel(@RequestBody ExcelEntity excel) {
+		excelService.operationExcel(excel);
+        return BaseResponse.success();
+	}
+
+	public BaseResponse<Void> download(HttpServletResponse response, HttpServletRequest request) {
+		excelService.download(response, request);
+        return BaseResponse.success();
 	}
 }

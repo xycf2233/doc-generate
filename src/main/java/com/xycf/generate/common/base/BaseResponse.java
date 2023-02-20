@@ -34,6 +34,9 @@ public class BaseResponse<T> {
         return BaseResponse.result(BaseResponseEnum.SUCCESS,t);
     }
 
+    public static <T> BaseResponse<T> success(){
+        return BaseResponse.success(null);
+    }
     public static <T> BaseResponse<T> fail(T t){
         return BaseResponse.result(BaseResponseEnum.FAIL,t);
     }
