@@ -9,12 +9,15 @@ import com.xycf.generate.common.dto.ScanUnZipDirDTO;
 import com.xycf.generate.common.enums.DecompressionEnum;
 import com.xycf.generate.common.enums.NotParseDir;
 import com.xycf.generate.common.enums.RedisConstants;
+import com.xycf.generate.common.req.OperateUploadZipReq;
+import com.xycf.generate.common.resp.ZipFileResp;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.entity.doc.ZipFile;
 import com.xycf.generate.operator.ClassOperator;
 import com.xycf.generate.service.UploadService;
 import com.xycf.generate.service.base.DecompressionService;
+import com.xycf.generate.util.EncryptUtil;
 import com.xycf.generate.util.FileUtil;
 import com.xycf.generate.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -117,7 +120,7 @@ public class UploadServiceImpl implements UploadService {
      * @param entityDirs     实体层文件夹名称集合 不可为null
      */
     @Override
-    public void scanUnZipDir(File file, List<String> controllerDirs, List<String> entityDirs,Map<String, String> controllerFileMap,Map<String, String> entityFileMap) {
+    public void scanUnZipDir(File file, List<String> controllerDirs, List<String> entityDirs, Map<String, String> controllerFileMap, Map<String, String> entityFileMap) {
         if (!file.isDirectory()) {
             throw new AppException("未找到解压后的文件!");
         }
@@ -129,7 +132,7 @@ public class UploadServiceImpl implements UploadService {
         for (File unzipFile : files) {
             if (unzipFile.isDirectory()) {
                 //如果是test文件夹或者target文件夹跳过
-                if(unzipFile.getName().equals("test")||unzipFile.getName().equals("target")){
+                if (unzipFile.getName().equals("test") || unzipFile.getName().equals("target")) {
                     continue;
                 }
                 //如果是文件夹 判断是否是controllerDirs
@@ -141,10 +144,10 @@ public class UploadServiceImpl implements UploadService {
                     //将文件夹下所有文件视为 实体层文件
                     putEntityMap(entityFileMap, unzipFile);
                 } else {
-                    scanUnZipDir(unzipFile, controllerDirs, entityDirs,controllerFileMap,entityFileMap);
+                    scanUnZipDir(unzipFile, controllerDirs, entityDirs, controllerFileMap, entityFileMap);
                 }
             } else {
-                if(!unzipFile.getName().endsWith(".java")){
+                if (!unzipFile.getName().endsWith(".java")) {
                     continue;
                 }
                 //这里主要处理controllerDirs为空的情况下 需要遍历所有文件找出控制层文件
@@ -165,6 +168,7 @@ public class UploadServiceImpl implements UploadService {
 
     /**
      * 上传模板文件
+     *
      * @param file
      * @param key
      * @return
@@ -177,27 +181,27 @@ public class UploadServiceImpl implements UploadService {
         FileUtil.mkDir(dir);
         String name = file.getOriginalFilename();
         try {
-            bos = new BufferedOutputStream(new FileOutputStream(dir+File.separator+name));
+            bos = new BufferedOutputStream(new FileOutputStream(dir + File.separator + name));
             bis = new BufferedInputStream(file.getInputStream());
             byte[] b = new byte[1024];
             int read = bis.read(b);
-            while (read!=-1){
+            while (read != -1) {
                 bos.write(b);
                 read = bis.read(b);
             }
             bos.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try{
-                if(bos!=null){
+        } finally {
+            try {
+                if (bos != null) {
                     bos.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
-                try{
-                    if(bis!=null){
+            } finally {
+                try {
+                    if (bis != null) {
                         bis.close();
                     }
                 } catch (IOException e) {
@@ -206,41 +210,85 @@ public class UploadServiceImpl implements UploadService {
             }
         }
         //模板地址存入缓存
-        redisUtils.setCacheObject(RedisConstants.TEMPLATE_DIR+key,dir+File.separator+name);
+        redisUtils.setCacheObject(RedisConstants.TEMPLATE_DIR + key, dir + File.separator + name);
     }
 
     @Override
     public List<ZipFile> uploadZipList(String key) {
+        List<ZipFile> zipFiles = redisUtils.getCacheObject(RedisConstants.preViewDoc + key);
+        if(CollUtil.isNotEmpty(zipFiles)){
+            return zipFiles;
+        }
         List<ZipFile> res = new ArrayList<>();
         //获取存储的路径 RedisConstants.UPLOAD_UNZIP + res
         String redisKey = RedisConstants.UPLOAD_UNZIP + key;
         String path = redisUtils.getCacheObject(redisKey);
-        if(CharSequenceUtil.isEmpty(path)){
+        if (CharSequenceUtil.isEmpty(path)) {
             throw new AppException("未读取到保存的文件夹");
         }
         File srcFile = new File(path);
-        if(!srcFile.isDirectory()){
+        if (!srcFile.isDirectory()) {
             throw new AppException("未读取到保存的文件夹");
         }
-        getFileList(Objects.requireNonNull(srcFile.listFiles()),res);
+        getFileList(Objects.requireNonNull(srcFile.listFiles()), res);
+        //将预览数据存入缓存
+        redisUtils.setCacheObject(RedisConstants.preViewDoc + key, res);
         return res;
     }
 
-    private void getFileList(File[] files,List<ZipFile> res){
+    /**
+     * 删除预览列表中某个文件
+     *
+     * @param req
+     */
+    @Override
+    public void delUploadZipList(OperateUploadZipReq req) {
+        List<ZipFile> zipFiles = redisUtils.getCacheObject(RedisConstants.preViewDoc + req.getKey());
+        delZip(zipFiles, req.getFileId());
+        redisUtils.setCacheObject(RedisConstants.preViewDoc + req.getKey(), zipFiles);
+    }
+
+    private void delZip(List<ZipFile> zipFiles, String fileId) {
+        for (ZipFile zipFile : zipFiles) {
+            if (zipFile.getFileId().equals(fileId)) {
+                zipFiles.remove(zipFile);
+                String path = EncryptUtil.DESdecode(zipFile.getFilePath(), docConfig.getSecret());
+                File file = new File(path);
+                if (file.exists()) {
+                    if(file.isDirectory()){
+                        FileUtil.deleteFolder(path);
+                    }else{
+                        FileUtil.deleteFile(path);
+                    }
+                    log.info("删除路径[{}]文件",path);
+                } else {
+                    log.warn("路径:[{}]下不存在文件", path);
+                }
+                break;
+            }
+            if (zipFile.isDir()) {
+                delZip(zipFile.getZipFiles(), fileId);
+            }
+        }
+    }
+
+    private void getFileList(File[] files, List<ZipFile> res) {
         for (File file : files) {
-            if(file.isDirectory() && !NotParseDir.contains(file.getName())){
+            if (file.isDirectory() && !NotParseDir.contains(file.getName())) {
                 ZipFile zipFile = new ZipFile();
                 zipFile.setFileName(file.getName());
                 zipFile.setDir(true);
-                getFileList(file.listFiles(),zipFile.getZipFiles());
-                if(CollUtil.isNotEmpty(zipFile.getZipFiles())){
+                zipFile.setFilePath(EncryptUtil.DESencode(file.getAbsolutePath(), docConfig.secret));
+                getFileList(file.listFiles(), zipFile.getZipFiles());
+                if (CollUtil.isNotEmpty(zipFile.getZipFiles())) {
                     res.add(zipFile);
                 }
-            }else{
-                if(file.getName().endsWith(".java")){
+            } else {
+                if (file.getName().endsWith(".java")) {
                     ZipFile zipFile = new ZipFile();
                     zipFile.setFileName(file.getName());
                     zipFile.setDir(false);
+                    zipFile.setFilePath(EncryptUtil.DESencode(file.getAbsolutePath(), docConfig.secret));
                     res.add(zipFile);
                 }
             }
@@ -264,7 +312,7 @@ public class UploadServiceImpl implements UploadService {
             } else {
                 ClassOperator classOperator = new ClassOperator();
                 ClassDoc classDoc = classOperator.getClassDoc(file.getAbsolutePath());
-                if(classDoc!=null){
+                if (classDoc != null) {
                     //类名
                     String className = classOperator.getClassName(classDoc);
                     entityFileMap.put(className, file.getAbsolutePath());

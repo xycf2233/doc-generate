@@ -40,3 +40,5 @@ doc:
   #解压文件路径
   upZip: unZip
   zip: zip
+  #加密密钥
+  secret: asgfvwsesagfvqwdf

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 @Data
 public class DocConfig {
 
+    @Value("${doc.secret}")
+    public String secret;
     /**
      * 模板文件存放的目录
      */

@@ -1,22 +1,22 @@
-package com.xycf.generate.entity.doc;
+package com.xycf.generate.common.resp;
 
-import com.xycf.generate.util.FileUtil;
+import com.xycf.generate.entity.doc.ZipFile;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @Author ztc
- * @Description 解压的文件列表实体
- * @Date 2023/2/20 14:25
+ * @Description 解压的文件列表返回实体
+ * @Date 2023/2/20 15:54
  */
 @Data
 @AllArgsConstructor
-public class ZipFile {
-
+@NoArgsConstructor
+public class ZipFileResp {
     @ApiModelProperty("文件id")
     private String fileId;
 
@@ -28,14 +28,4 @@ public class ZipFile {
 
     @ApiModelProperty("文件夹下的文件")
     private List<ZipFile> zipFiles;
-
-    /**
-     * 文件路径
-     */
-    private String filePath;
-
-    public ZipFile() {
-        fileId = FileUtil.createFileId();
-        zipFiles = new ArrayList<>();
-    }
 }

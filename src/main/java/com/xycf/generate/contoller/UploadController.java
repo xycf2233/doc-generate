@@ -1,10 +1,10 @@
 package com.xycf.generate.contoller;
 
 import com.xycf.generate.common.base.BaseResponse;
+import com.xycf.generate.common.req.OperateUploadZipReq;
 import com.xycf.generate.entity.doc.ZipFile;
 import com.xycf.generate.service.UploadService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +27,14 @@ public class UploadController {
 
     @ApiOperation(value = "上传压缩文件")
     @PostMapping("/zip")
-    public BaseResponse<String> uploadZip(@RequestParam("file") MultipartFile file){
+    public BaseResponse<String> uploadZip(@RequestParam("file")@ApiParam("上传的压缩文件") MultipartFile file){
         return BaseResponse.success(uploadService.uploadFile(file));
     }
 
     @ApiOperation(value = "上传模板文件")
     @PostMapping("/template")
-    public BaseResponse<?> uploadTemplate(@RequestParam("file") MultipartFile file, @RequestParam("key") String key){
+    public BaseResponse<?> uploadTemplate(@RequestParam("file")@ApiParam("上传的模板文件") MultipartFile file,
+                                          @RequestParam("key")@ApiParam("用户唯一key") String key){
         uploadService.uploadTemplate(file,key);
         return BaseResponse.success(null);
     }
@@ -43,5 +44,12 @@ public class UploadController {
     public BaseResponse<List<ZipFile>> uploadZipList(@RequestBody @ApiParam("用户唯一key") String key){
         List<ZipFile> list = uploadService.uploadZipList(key);
         return BaseResponse.success(list);
+    }
+
+    @ApiOperation("文件列表预览----删除")
+    @PostMapping("/uploadZipList/del")
+    public BaseResponse<?> delUploadZipList(@RequestBody OperateUploadZipReq req){
+        uploadService.delUploadZipList(req);
+        return BaseResponse.success(null);
     }
 }

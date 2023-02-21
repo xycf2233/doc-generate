@@ -35,4 +35,9 @@ public class RedisConstants {
      * 存储模板文件的文件夹
      */
     public static final String OUTPUT_DIR = "output:";
+
+    /**
+     * 预览压缩文件的 文件夹
+     */
+    public static final String preViewDoc = "preView:";
 }

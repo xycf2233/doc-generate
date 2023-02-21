@@ -1,6 +1,6 @@
 package com.xycf.generate.service;
 
-import com.xycf.generate.common.dto.ScanUnZipDirDTO;
+import com.xycf.generate.common.req.OperateUploadZipReq;
 import com.xycf.generate.entity.doc.ZipFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,4 +44,10 @@ public interface UploadService {
      * @return
      */
     List<ZipFile> uploadZipList(String key);
+
+    /**
+     * 删除预览列表中某个文件
+     * @param req
+     */
+    void delUploadZipList(OperateUploadZipReq req);
 }
