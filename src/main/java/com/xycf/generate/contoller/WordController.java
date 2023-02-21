@@ -1,7 +1,9 @@
 package com.xycf.generate.contoller;
 
 import com.xycf.generate.common.req.GenerateDocumentReq;
+import com.xycf.generate.mapper.DocStrategyFactory;
 import com.xycf.generate.service.base.DocService;
+import com.xycf.generate.service.impl.WordServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,18 +23,18 @@ import javax.validation.Valid;
 @RequestMapping("/word")
 @Api("word文档操作控制层")
 public class WordController {
-    @Resource(name = "wordServiceImpl")
-    private DocService wordService;
+    @Resource
+    private DocStrategyFactory docStrategyFactory;
 
     @PostMapping("/generateDocument")
     @ApiOperation(value = "根据默认模板生成word文档")
     public void generateDocument(@Valid @RequestBody GenerateDocumentReq req){
-        wordService.generateDocumentForTemplate(req.getKey(), req.getControllerDirs(), req.getEntityDirs(),true);
+        docStrategyFactory.generateDocumentDefault(WordServiceImpl.class.getName(),req.getKey(), req.getControllerDirs(), req.getEntityDirs());
     }
 
     @PostMapping("/generateDocumentForTemplate")
     @ApiOperation(value = "根据模板生成word文档")
     public void generateDocumentForTemplate(@Valid @RequestBody GenerateDocumentReq req){
-        wordService.generateDocumentForTemplate(req.getKey(), req.getControllerDirs(), req.getEntityDirs(),false);
+        docStrategyFactory.generateDocumentForTemplate(WordServiceImpl.class.getName(),req.getKey(), req.getControllerDirs(), req.getEntityDirs());
     }
 }
