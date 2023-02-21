@@ -7,6 +7,7 @@ import com.spire.doc.Document;
 import com.spire.doc.DocumentObject;
 import com.spire.doc.FileFormat;
 import com.spire.doc.Section;
+import com.xycf.generate.common.enums.base.BaseResponseEnum;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -1125,5 +1126,44 @@ public class FileUtil {
         //保存合并后的文档
         doc.saveToFile(targetFile, FileFormat.Docx_2010);
         log.info("合并接口文档成功。。");
+    }
+
+    public static void writeFile(MultipartFile file,String path){
+        File target = new File(path);
+        if(target.isDirectory()){
+            log.warn("writefile---路径:[{}] 不是一个文件",path);
+            throw new AppException(BaseResponseEnum.FAIL);
+        }
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        try {
+            bis = new BufferedInputStream(file.getInputStream());
+            bos = new BufferedOutputStream(new FileOutputStream(path));
+            byte[] b = new byte[1024];
+            int read = bis.read(b);
+            while (read != -1) {
+                bos.write(b);
+                read = bis.read(b);
+            }
+            bos.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }finally {
+            try{
+                if(bos!=null){
+                    bos.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }finally {
+                try{
+                    if(bis!=null){
+                        bis.close();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }

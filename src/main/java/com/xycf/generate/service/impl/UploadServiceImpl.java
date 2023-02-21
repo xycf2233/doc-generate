@@ -216,7 +216,7 @@ public class UploadServiceImpl implements UploadService {
     @Override
     public List<ZipFile> uploadZipList(String key) {
         List<ZipFile> zipFiles = redisUtils.getCacheObject(RedisConstants.preViewDoc + key);
-        if(CollUtil.isNotEmpty(zipFiles)){
+        if (CollUtil.isNotEmpty(zipFiles)) {
             return zipFiles;
         }
         List<ZipFile> res = new ArrayList<>();
@@ -248,6 +248,52 @@ public class UploadServiceImpl implements UploadService {
         redisUtils.setCacheObject(RedisConstants.preViewDoc + req.getKey(), zipFiles);
     }
 
+    /**
+     * 在预览列表的某个文件夹下增加文件
+     *
+     * @param req
+     */
+    @Override
+    public void addUploadZipList(OperateUploadZipReq req) {
+        List<ZipFile> zipFiles = redisUtils.getCacheObject(RedisConstants.preViewDoc + req.getKey());
+        addZip(zipFiles,req.getFileId(),req.getFile(),req.getKey());
+        redisUtils.setCacheObject(RedisConstants.preViewDoc + req.getKey(), zipFiles);
+    }
+
+    private void addZip(List<ZipFile> zipFiles, String fileId, MultipartFile file, String key) {
+        String originalFilename = file.getOriginalFilename();
+        if(!originalFilename.endsWith(".java")){
+            throw new AppException("添加的不是一个java文件");
+        }
+        if (CharSequenceUtil.isEmpty(fileId)) {
+            StringBuilder targetPath = new StringBuilder(docConfig.getUpZip())
+                    .append(File.separator)
+                    .append(key).append(File.separator).append(originalFilename);
+            FileUtil.writeFile(file,targetPath.toString());
+            ZipFile addFile = new ZipFile();
+            addFile.setFilePath(targetPath.toString());
+            addFile.setFileName(originalFilename.substring(0, originalFilename.indexOf(".")));
+            zipFiles.add(addFile);
+        }else{
+            for (ZipFile zipFile : zipFiles) {
+                if(zipFile.getFileId().equals(fileId) && zipFile.isDir()){
+                    String dirPath = EncryptUtil.DESdecode(zipFile.getFilePath(), docConfig.getSecret());
+                    StringBuilder targetPath = new StringBuilder(dirPath);
+                    targetPath.append(File.separator).append(originalFilename);
+                    FileUtil.writeFile(file,targetPath.toString());
+                    ZipFile addFile = new ZipFile();
+                    addFile.setFilePath(targetPath.toString());
+                    addFile.setFileName(originalFilename.substring(0, originalFilename.indexOf(".")));
+                    zipFile.getZipFiles().add(addFile);
+                }
+                if (zipFile.isDir()) {
+                    addZip(zipFile.getZipFiles(), fileId,file,key);
+                }
+            }
+        }
+
+    }
+
     private void delZip(List<ZipFile> zipFiles, String fileId) {
         for (ZipFile zipFile : zipFiles) {
             if (zipFile.getFileId().equals(fileId)) {
@@ -255,12 +301,12 @@ public class UploadServiceImpl implements UploadService {
                 String path = EncryptUtil.DESdecode(zipFile.getFilePath(), docConfig.getSecret());
                 File file = new File(path);
                 if (file.exists()) {
-                    if(file.isDirectory()){
+                    if (file.isDirectory()) {
                         FileUtil.deleteFolder(path);
-                    }else{
+                    } else {
                         FileUtil.deleteFile(path);
                     }
-                    log.info("删除路径[{}]文件",path);
+                    log.info("删除路径[{}]文件", path);
                 } else {
                     log.warn("路径:[{}]下不存在文件", path);
                 }

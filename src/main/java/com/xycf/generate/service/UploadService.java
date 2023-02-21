@@ -50,4 +50,10 @@ public interface UploadService {
      * @param req
      */
     void delUploadZipList(OperateUploadZipReq req);
+
+    /**
+     * 在预览列表的某个文件夹下增加文件
+     * @param req
+     */
+    void addUploadZipList(OperateUploadZipReq req);
 }

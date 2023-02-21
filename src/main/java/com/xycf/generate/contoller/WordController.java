@@ -1,5 +1,6 @@
 package com.xycf.generate.contoller;
 
+import com.xycf.generate.common.base.BaseResponse;
 import com.xycf.generate.common.req.GenerateDocumentReq;
 import com.xycf.generate.mapper.DocStrategyFactory;
 import com.xycf.generate.service.base.DocService;
@@ -28,13 +29,15 @@ public class WordController {
 
     @PostMapping("/generateDocument")
     @ApiOperation(value = "根据默认模板生成word文档")
-    public void generateDocument(@Valid @RequestBody GenerateDocumentReq req){
+    public BaseResponse<?> generateDocument(@Valid @RequestBody GenerateDocumentReq req){
         docStrategyFactory.generateDocumentDefault(WordServiceImpl.class.getName(),req.getKey(), req.getControllerDirs(), req.getEntityDirs());
+        return BaseResponse.success(null);
     }
 
     @PostMapping("/generateDocumentForTemplate")
     @ApiOperation(value = "根据模板生成word文档")
-    public void generateDocumentForTemplate(@Valid @RequestBody GenerateDocumentReq req){
+    public BaseResponse<?> generateDocumentForTemplate(@Valid @RequestBody GenerateDocumentReq req){
         docStrategyFactory.generateDocumentForTemplate(WordServiceImpl.class.getName(),req.getKey(), req.getControllerDirs(), req.getEntityDirs());
+        return BaseResponse.success(null);
     }
 }

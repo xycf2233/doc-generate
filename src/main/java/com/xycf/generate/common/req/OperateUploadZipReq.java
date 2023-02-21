@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Author ztc
@@ -25,4 +26,7 @@ public class OperateUploadZipReq {
      */
     @ApiModelProperty("文件ID")
     private String fileId;
+
+    @ApiModelProperty("文件")
+    private MultipartFile file;
 }

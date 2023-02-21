@@ -52,4 +52,11 @@ public class UploadController {
         uploadService.delUploadZipList(req);
         return BaseResponse.success(null);
     }
+
+    @ApiOperation("文件列表预览----增加")
+    @PostMapping("/uploadZipList/add")
+    public BaseResponse<?> addUploadZipList(OperateUploadZipReq req){
+        uploadService.addUploadZipList(req);
+        return BaseResponse.success(null);
+    }
 }
