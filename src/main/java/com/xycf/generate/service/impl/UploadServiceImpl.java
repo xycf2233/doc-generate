@@ -390,11 +390,4 @@ public class UploadServiceImpl implements UploadService {
             }
         }
     }
-
-    public static void main(String[] args) {
-        File file = new File("C:\\Users\\Administrator\\Desktop\\新建文件夹\\96540883.jpg");
-        String name = file.getName();
-        String absolutePath = file.getAbsolutePath();
-        System.out.println(name);
-    }
 }
