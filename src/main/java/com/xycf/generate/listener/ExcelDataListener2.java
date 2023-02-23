@@ -22,7 +22,36 @@ import java.util.List;
 @Order(3)
 public class ExcelDataListener2 implements ReadListener<ExcelEntity> {
 
-    private List<ExcelEntity> list = new ArrayList<>();
+    private ThreadLocal<List<ExcelEntity>> threadLocal = null;
+
+    public ExcelDataListener2() {
+        init();
+    }
+
+    private void init() {
+        threadLocal = new ThreadLocal<>();
+        threadLocal.set(new ArrayList<>());
+    }
+
+    public List<ExcelEntity> getList(){
+        if(threadLocal==null){
+            init();
+        }
+        return threadLocal.get();
+    }
+
+    public void add(ExcelEntity excelEntity){
+        if(threadLocal==null){
+            init();
+        }
+        threadLocal.get().add(excelEntity);
+    }
+
+    public void clear(){
+        if(threadLocal!=null){
+            threadLocal.remove();
+        }
+    }
 
     /**
      * 每读取一条数据时触发
@@ -32,7 +61,7 @@ public class ExcelDataListener2 implements ReadListener<ExcelEntity> {
      */
     @Override
     public void invoke(ExcelEntity excelEntity, AnalysisContext analysisContext) {
-        list.add(excelEntity);
+        add(excelEntity);
     }
 
     /**
@@ -41,10 +70,12 @@ public class ExcelDataListener2 implements ReadListener<ExcelEntity> {
      * @param analysisContext
      */
     @Override
-    public void doAfterAllAnalysed(AnalysisContext analysisContext){
+    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        log.info("读取excel文件已完成。。。。。。。。");
     }
 
     public void doClearList() {
-        list.clear();
+        clear();
+        log.info("清除list数据成功");
     }
 }

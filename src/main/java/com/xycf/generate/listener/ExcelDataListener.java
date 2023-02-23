@@ -18,12 +18,40 @@ import java.util.List;
  * @Date 2023/2/14 15:13
  */
 @Slf4j
-@Getter
 @Component
 @Order(2)
 public class ExcelDataListener implements ReadListener<ExcelEntity> {
 
-    private List<ExcelEntity> list = new ArrayList<>();
+    private ThreadLocal<List<ExcelEntity>> threadLocal = null;
+
+    public ExcelDataListener() {
+        init();
+    }
+
+    private void init() {
+        threadLocal = new ThreadLocal<>();
+        threadLocal.set(new ArrayList<>());
+    }
+
+    public List<ExcelEntity> getList(){
+        if(threadLocal==null){
+            init();
+        }
+        return threadLocal.get();
+    }
+
+    public void add(ExcelEntity excelEntity){
+        if(threadLocal==null){
+            init();
+        }
+        threadLocal.get().add(excelEntity);
+    }
+
+    public void clear(){
+        if(threadLocal!=null){
+            threadLocal.remove();
+        }
+    }
 
     /**
      * 每读取一条数据时触发
@@ -33,7 +61,7 @@ public class ExcelDataListener implements ReadListener<ExcelEntity> {
      */
     @Override
     public void invoke(ExcelEntity excelEntity, AnalysisContext analysisContext) {
-        list.add(excelEntity);
+        add(excelEntity);
     }
 
     /**
@@ -47,7 +75,7 @@ public class ExcelDataListener implements ReadListener<ExcelEntity> {
     }
 
     public void doClearList() {
-        list.clear();
+        clear();
         log.info("清除list数据成功");
     }
 }
