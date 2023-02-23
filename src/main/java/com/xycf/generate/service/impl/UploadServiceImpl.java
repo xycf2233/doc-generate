@@ -256,8 +256,30 @@ public class UploadServiceImpl implements UploadService {
     @Override
     public void addUploadZipList(OperateUploadZipReq req) {
         List<ZipFile> zipFiles = redisUtils.getCacheObject(RedisConstants.preViewDoc + req.getKey());
-        addZip(zipFiles,req.getFileId(),req.getFile(),req.getKey());
+        if(CharSequenceUtil.isNotEmpty(req.getAddDirName())){
+            addDir(req.getAddDirName(),req.getFileId(),zipFiles);
+        }else {
+            addZip(zipFiles,req.getFileId(),req.getFile(),req.getKey());
+        }
         redisUtils.setCacheObject(RedisConstants.preViewDoc + req.getKey(), zipFiles);
+    }
+
+    private void addDir(String addDirName, String fileId, List<ZipFile> zipFiles) {
+        for (ZipFile zipFile : zipFiles) {
+            if(zipFile.getFileId().equals(fileId) && zipFile.isDir()){
+                String dirPath = EncryptUtil.DESdecode(zipFile.getFilePath(), docConfig.getSecret());
+                StringBuilder targetPath = new StringBuilder(dirPath);
+                targetPath.append(File.separator).append(addDirName);
+                FileUtil.mkDir(targetPath.toString());
+                ZipFile addFile = new ZipFile();
+                addFile.setFilePath(targetPath.toString());
+                addFile.setFileName(addDirName);
+                addFile.setDir(true);
+                zipFile.getZipFiles().add(addFile);
+            }else if (zipFile.isDir()) {
+                addDir(addDirName, fileId,zipFile.getZipFiles());
+            }
+        }
     }
 
     private void addZip(List<ZipFile> zipFiles, String fileId, MultipartFile file, String key) {
@@ -285,8 +307,8 @@ public class UploadServiceImpl implements UploadService {
                     addFile.setFilePath(targetPath.toString());
                     addFile.setFileName(originalFilename.substring(0, originalFilename.indexOf(".")));
                     zipFile.getZipFiles().add(addFile);
-                }
-                if (zipFile.isDir()) {
+                    break;
+                }else if (zipFile.isDir()) {
                     addZip(zipFile.getZipFiles(), fileId,file,key);
                 }
             }

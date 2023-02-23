@@ -29,4 +29,7 @@ public class OperateUploadZipReq {
 
     @ApiModelProperty("文件")
     private MultipartFile file;
+
+    @ApiModelProperty("新增文件夹名称")
+    private String addDirName;
 }

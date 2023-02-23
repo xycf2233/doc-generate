@@ -53,7 +53,7 @@ public class UploadController {
         return BaseResponse.success(null);
     }
 
-    @ApiOperation("文件列表预览----增加")
+    @ApiOperation("文件列表预览----增加文件/文件夹")
     @PostMapping("/uploadZipList/add")
     public BaseResponse<?> addUploadZipList(OperateUploadZipReq req){
         uploadService.addUploadZipList(req);
