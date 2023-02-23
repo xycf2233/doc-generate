@@ -3,14 +3,11 @@ package com.xycf.generate.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.ObjectId;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.StrUtil;
 import com.sun.javadoc.ClassDoc;
-import com.xycf.generate.common.dto.ScanUnZipDirDTO;
 import com.xycf.generate.common.enums.DecompressionEnum;
-import com.xycf.generate.common.enums.NotParseDir;
+import com.xycf.generate.common.enums.NotParseDirEnum;
 import com.xycf.generate.common.enums.RedisConstants;
 import com.xycf.generate.common.req.OperateUploadZipReq;
-import com.xycf.generate.common.resp.ZipFileResp;
 import com.xycf.generate.config.DocConfig;
 import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.entity.doc.ZipFile;
@@ -342,7 +339,7 @@ public class UploadServiceImpl implements UploadService {
 
     private void getFileList(File[] files, List<ZipFile> res) {
         for (File file : files) {
-            if (file.isDirectory() && !NotParseDir.contains(file.getName())) {
+            if (file.isDirectory() && !NotParseDirEnum.contains(file.getName())) {
                 ZipFile zipFile = new ZipFile();
                 zipFile.setFileName(file.getName());
                 zipFile.setDir(true);

@@ -14,7 +14,7 @@ import java.util.Set;
  */
 @Getter
 @AllArgsConstructor
-public enum NotParseDir {
+public enum NotParseDirEnum {
     GIT(".git"),
     IDEA(".idea"),
     TARGET("target"),
@@ -22,7 +22,7 @@ public enum NotParseDir {
     ;
     private String code;
 
-    private static final Set<NotParseDir> ALL = EnumSet.allOf(NotParseDir.class);
+    private static final Set<NotParseDirEnum> ALL = EnumSet.allOf(NotParseDirEnum.class);
 
     /**
      * 是否是不需要解析的文件夹
@@ -30,7 +30,7 @@ public enum NotParseDir {
      * @return
      */
     public static boolean contains(String code){
-        Optional<NotParseDir> any = ALL.stream().filter(t -> t.getCode().equals(code)).findAny();
+        Optional<NotParseDirEnum> any = ALL.stream().filter(t -> t.getCode().equals(code)).findAny();
         if(any.isPresent()){
             return true;
         }else{

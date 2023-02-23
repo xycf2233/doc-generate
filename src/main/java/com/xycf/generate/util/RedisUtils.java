@@ -120,6 +120,7 @@ public class RedisUtils {
      */
     public <T> long setCacheList(final String key, final List<T> dataList) {
         Long count = redisTemplate.opsForList().rightPushAll(key, dataList);
+        redisTemplate.expire(key,1L,TimeUnit.HOURS);
         return count == null ? 0 : count;
     }
 
@@ -167,6 +168,7 @@ public class RedisUtils {
     public <T> void setCacheMap(final String key, final Map<String, T> dataMap) {
         if (dataMap != null) {
             redisTemplate.opsForHash().putAll(key, dataMap);
+            redisTemplate.expire(key,1L,TimeUnit.HOURS);
         }
     }
 
@@ -189,6 +191,7 @@ public class RedisUtils {
      */
     public <T> void setCacheMapValue(final String key, final String hKey, final T value) {
         redisTemplate.opsForHash().put(key, hKey, value);
+        redisTemplate.expire(key,1L,TimeUnit.HOURS);
     }
 
     /**
@@ -252,7 +255,9 @@ public class RedisUtils {
      * @return
      */
     public Boolean setIfAbsent(final String key,final String value) {
-        return redisTemplate.opsForValue().setIfAbsent(key,value);
+        Boolean absent = redisTemplate.opsForValue().setIfAbsent(key, value);
+        redisTemplate.expire(key,1L,TimeUnit.HOURS);
+        return absent;
     }
 
     /**

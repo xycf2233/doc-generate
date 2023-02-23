@@ -1,5 +1,6 @@
 package com.xycf.generate.listener;
 
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.xycf.generate.entity.excel.ExcelEntity;
@@ -24,10 +25,6 @@ public class ExcelDataListener2 implements ReadListener<ExcelEntity> {
 
     private ThreadLocal<List<ExcelEntity>> threadLocal = null;
 
-    public ExcelDataListener2() {
-        init();
-    }
-
     private void init() {
         threadLocal = new ThreadLocal<>();
         threadLocal.set(new ArrayList<>());
@@ -41,10 +38,11 @@ public class ExcelDataListener2 implements ReadListener<ExcelEntity> {
     }
 
     public void add(ExcelEntity excelEntity){
-        if(threadLocal==null){
+        if(threadLocal==null || CollUtil.isEmpty(threadLocal.get())){
             init();
         }
-        threadLocal.get().add(excelEntity);
+        List<ExcelEntity> excelEntities = threadLocal.get();
+        excelEntities.add(excelEntity);
     }
 
     public void clear(){

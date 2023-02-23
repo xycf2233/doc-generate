@@ -16,4 +16,6 @@ public class ExcelListResponse implements Serializable {
 	private List<ExcelEntity> sheetOneList;
 
 	private List<ExcelEntity> sheetTwoList;
+
+	private String key;
 }

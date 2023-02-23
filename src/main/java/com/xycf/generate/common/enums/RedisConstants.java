@@ -40,4 +40,9 @@ public class RedisConstants {
      * 预览压缩文件的 文件夹
      */
     public static final String preViewDoc = "preView:";
+
+    /**
+     * 解析的excel数据
+     */
+    public static final String EXCEL_DATA = "excel_data:";
 }

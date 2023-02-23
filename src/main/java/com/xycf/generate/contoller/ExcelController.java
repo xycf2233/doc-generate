@@ -1,11 +1,13 @@
 package com.xycf.generate.contoller;
 
 import com.xycf.generate.common.base.BaseResponse;
+import com.xycf.generate.common.req.OperationExcelReq;
 import com.xycf.generate.entity.excel.ExcelEntity;
 import com.xycf.generate.entity.excel.ExcelListResponse;
 import com.xycf.generate.service.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +27,7 @@ public class ExcelController {
 
 	@Autowired
 	ExcelService excelService;
-	@RequestMapping(value = "getExcelList", method = RequestMethod.POST)
+	@RequestMapping(value = "/getExcelList", method = RequestMethod.POST)
 	public BaseResponse<ExcelListResponse> getExcelListResponse(@RequestParam("file") MultipartFile file) {
 		try {
 			return BaseResponse.success(excelService.getExcelListResponse(file));
@@ -34,8 +36,9 @@ public class ExcelController {
 		}
 	}
 
-	public BaseResponse<Void> operationExcel(@RequestBody ExcelEntity excel) {
-		excelService.operationExcel(excel);
+	@PostMapping("/operationExcel")
+	public BaseResponse<Void> operationExcel(@RequestBody OperationExcelReq req) {
+		excelService.operationExcel(req);
         return BaseResponse.success();
 	}
 
