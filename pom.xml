@@ -201,6 +201,35 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <!--docker镜像相关的配置信息1-->
+                <configuration>
+                    <!--镜像名，这里用工程名-->
+                    <imageName>${project.artifactId}</imageName>
+                    <!--Dockerfile文件所在目录-->
+                    <dockerDirectory>${project.basedir}/src/main/resources</dockerDirectory>
+                    <!--TAG,这里用工程版本号-->
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                    </imageTags>        <!--私服地址-->
+                    <registryUrl>39.101.65.212</registryUrl>
+                    <!--是否推送镜像到私服-->
+                    <pushImage>true</pushImage>
+                    <!--给镜像做标记-->
+                    <imageName>39.101.65.212/library/${project.artifactId}:${project.version}</imageName>
+                    <!--构建镜像的配置信息-->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.artifactId}-${project.version}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
