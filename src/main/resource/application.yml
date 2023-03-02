@@ -44,3 +44,5 @@ doc:
   zip: zip
   #加密密钥
   secret: asgfvwsesagfvqwdf
+server:
+  port: 7900
