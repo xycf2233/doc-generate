@@ -5,7 +5,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.metadata.ReadSheet;
-import com.google.common.collect.Lists;
 import com.xycf.generate.common.enums.RedisConstants;
 import com.xycf.generate.common.enums.base.BaseResponseEnum;
 import com.xycf.generate.common.req.OperationExcelReq;
@@ -61,8 +60,8 @@ public class ExcelServiceImpl extends BaseExcelService implements ExcelService {
 		List<ExcelEntity> listenerTwoList = excelDataListener2.getList();
 		logger.info("ExcelDataListener sheet:[1] getList: " + listenerOneList);
 		logger.info("ExcelDataListener sheet:[2] getList: " + listenerTwoList);
-		List<ExcelEntity> resultOne = Lists.newArrayList(listenerOneList);
-		List<ExcelEntity> resultTwo = Lists.newArrayList(listenerTwoList);
+		List<ExcelEntity> resultOne = new ArrayList<>(listenerOneList);
+		List<ExcelEntity> resultTwo = new ArrayList<>(listenerTwoList);
 		excelDataListener.doClearList();
 		excelDataListener2.doClearList();
 		String key = IdUtil.fastUUID();
