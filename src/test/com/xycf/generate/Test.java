@@ -1,9 +1,7 @@
 package com.xycf.generate;
 
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.digest.HMac;
 import com.xycf.generate.operator.ClassOperator;
-import com.xycf.generate.util.EncryptUtil;
+import com.xycf.generate.util.WordToPdfUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
@@ -23,11 +21,9 @@ public class Test {
     public void test() {
 
     }
-
     public static void main(String[] args) {
-        String abc = EncryptUtil.DESencode("abc", "123456");
-        String s = EncryptUtil.DESdecode(abc, "123456");
-        System.out.println(abc);
-        System.out.println(s);
+        String wordUrl = "C:\\Users\\张天成\\Desktop\\新建文件夹\\KBD 检测最近一次售点任务是否合格.docx";
+        String pdfUrl = "C:\\Users\\张天成\\Desktop\\新建文件夹\\pdf111.pdf";
+        WordToPdfUtils.docToPdf(wordUrl,pdfUrl);
     }
 }
