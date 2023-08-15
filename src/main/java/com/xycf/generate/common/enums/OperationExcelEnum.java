@@ -5,15 +5,13 @@ import lombok.Getter;
 
 /**
  * @Author ztc
- * @Description TODO
+ * @Description 操作excel枚举
  * @Date 2023/2/23 16:57
  */
 @Getter
 @AllArgsConstructor
-public enum OperationEnum {
-    INSERT(0),
-    DELETE(1),
-    UPDATE(2),
+public enum OperationExcelEnum {
+    MERGE(0),
     ;
     private int code;
 }

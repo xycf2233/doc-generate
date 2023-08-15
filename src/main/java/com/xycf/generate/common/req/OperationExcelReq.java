@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @Author ztc
  * @Description TODO
@@ -16,19 +18,14 @@ import lombok.NoArgsConstructor;
 public class OperationExcelReq {
 
     /**
-     * 0 增  1 删  2 改
+     * OperationExcelEnum:0 合并sheet
      */
     private Integer operation;
 
     /**
-     * 表格数据
+     * 关联列
      */
-    private ExcelEntity excel;
-
-    /**
-     * 1  or  2
-     */
-    private Integer sheetNum;
+    private Integer columnToMerge;
 
     /**
      * 用户唯一key

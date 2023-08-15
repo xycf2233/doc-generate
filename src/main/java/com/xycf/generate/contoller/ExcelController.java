@@ -25,25 +25,54 @@ import java.io.IOException;
 @RequestMapping("/excel")
 public class ExcelController {
 
-	@Autowired
-	ExcelService excelService;
-	@RequestMapping(value = "/getExcelList", method = RequestMethod.POST)
-	public BaseResponse<ExcelListResponse> getExcelListResponse(@RequestParam("file") MultipartFile file) {
-		try {
-			return BaseResponse.success(excelService.getExcelListResponse(file));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Autowired
+    ExcelService excelService;
 
-	@PostMapping("/operationExcel")
-	public BaseResponse<Void> operationExcel(@RequestBody OperationExcelReq req) {
-		excelService.operationExcel(req);
-        return BaseResponse.success();
-	}
+    /**
+     * 解析两个sheet页数据 返回前端
+     *
+     * @param file
+     * @return
+     */
+    @RequestMapping(value = "/getExcelList", method = RequestMethod.POST)
+    public BaseResponse<ExcelListResponse> getExcelListResponse(@RequestParam("file") MultipartFile file) {
+        try {
+            return BaseResponse.success(excelService.getExcelListResponse(file));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public BaseResponse<Void> download(HttpServletResponse response, HttpServletRequest request) {
-		excelService.download(response, request);
+    /**
+     * 合并excel
+     *
+     * @param req
+     * @return
+     */
+    @PostMapping("/mergeExcel")
+    public BaseResponse<Void> mergeExcel(@RequestBody OperationExcelReq req, HttpServletResponse response) {
+        excelService.mergeExcel(req, response);
         return BaseResponse.success();
-	}
+    }
+
+    /**
+     * 合并excel
+     *
+     * @param file1
+     * @param file2
+     * @param response
+     * @return
+     */
+    @PostMapping("/mergeExcelV2")
+    public BaseResponse<Void> mergeExcelV2(@RequestParam("file") MultipartFile file,
+                                           @RequestParam("columnToMerge") Integer columnToMerge,
+                                           HttpServletResponse response) {
+        excelService.mergeExcel(file,columnToMerge ,response);
+        return BaseResponse.success();
+    }
+
+    public BaseResponse<Void> download(HttpServletResponse response, HttpServletRequest request) {
+        excelService.download(response, request);
+        return BaseResponse.success();
+    }
 }

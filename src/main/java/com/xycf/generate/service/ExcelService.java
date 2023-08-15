@@ -3,6 +3,7 @@ package com.xycf.generate.service;
 import com.xycf.generate.common.req.OperationExcelReq;
 import com.xycf.generate.entity.excel.ExcelEntity;
 import com.xycf.generate.entity.excel.ExcelListResponse;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +17,17 @@ import java.io.IOException;
  * @Description:
  */
 public interface ExcelService {
-	/**
-	 *  获取Excel列表
-	 * @param file
-	 * @return
-	 */
-	ExcelListResponse getExcelListResponse(MultipartFile file) throws IOException;
+    /**
+     * 获取Excel列表
+     *
+     * @param file
+     * @return
+     */
+    ExcelListResponse getExcelListResponse(MultipartFile file) throws IOException;
 
-	void operationExcel(OperationExcelReq req);
+    void mergeExcel(OperationExcelReq req, HttpServletResponse response);
 
-	void download(HttpServletResponse response, HttpServletRequest request);
+    void mergeExcel(MultipartFile file,Integer columnToMerge, HttpServletResponse response);
+
+    void download(HttpServletResponse response, HttpServletRequest request);
 }

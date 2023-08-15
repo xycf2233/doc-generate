@@ -7,6 +7,7 @@ import com.xycf.generate.config.exception.AppException;
 import com.xycf.generate.entity.excel.ExcelEntity;
 import com.xycf.generate.listener.ExcelDataListener;
 import com.xycf.generate.listener.ExcelDataListener2;
+import com.xycf.generate.listener.NoModelDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class BaseExcelService {
 	public ExcelDataListener excelDataListener;
 	@Autowired
 	public ExcelDataListener2 excelDataListener2;
+	@Autowired
+	public NoModelDataListener noModelDataListener;
 
 	public void checkReadExcel(InputStream inputStream) {
 		ExcelReader excelReader = null;

@@ -1,10 +1,15 @@
 package com.xycf.generate.entity.excel;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.xycf.generate.cache.LocalCache;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * @Author ztc
@@ -15,6 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ExcelEntity {
 
     @ExcelProperty(index = 0)
@@ -60,4 +66,24 @@ public class ExcelEntity {
     @ExcelProperty(index = 20)
     private String index20;
 
+    public String getColumnValue(int index) {
+        String res = null;
+        String paramName = "index" + index;
+        try {
+            Field[] fields = (Field[]) LocalCache.getCache(ExcelEntity.class.getSimpleName());
+            if (fields == null || fields.length == 0) {
+                fields = this.getClass().getDeclaredFields();
+                LocalCache.addCache(ExcelEntity.class.getSimpleName(), fields);
+            }
+            for (Field field : fields) {
+                if (field.getName().equals(paramName)) {
+                    res = (String) field.get(this);
+                    break;
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
 }
