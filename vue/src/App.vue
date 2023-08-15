@@ -7,12 +7,10 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="4">
-      <el-aside>
+    <el-col :span="5">
         <Menu></Menu>
-      </el-aside>
     </el-col>
-    <el-col :span="20">
+    <el-col :span="19">
       <el-main>
         <Breadcrumb></Breadcrumb>
         <RouterView></RouterView>
@@ -30,6 +28,10 @@
   import Header from "./components/Header.vue";
 </script>
 
-<style scoped>
-  
+<style lang="less">
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 </style>
